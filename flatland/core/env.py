@@ -3,6 +3,9 @@ The env module defines the base Environment class.
 The base Environment class is adapted from rllib.env.MultiAgentEnv
 (https://github.com/ray-project/ray).
 """
+import abc
+
+import gymnasium as gym
 
 
 class Environment:
@@ -43,10 +46,11 @@ class Environment:
 
     """
 
+    @abc.abstractmethod
     def __init__(self):
-        self.action_space = ()
         pass
 
+    @abc.abstractmethod
     def reset(self):
         """
         Resets the env and returns observations from agents in the environment.
@@ -58,6 +62,7 @@ class Environment:
         """
         raise NotImplementedError()
 
+    @abc.abstractmethod
     def step(self, action_dict):
         """
         Environment step.
@@ -85,9 +90,22 @@ class Environment:
         """
         raise NotImplementedError()
 
+    @abc.abstractmethod
     def get_agent_handles(self):
         """
         Returns a list of agents' handles to be used as keys in the step()
         function.
         """
+        raise NotImplementedError()
+
+    # TODO can we keep Environment clean from ray dependencies?
+    @property
+    @abc.abstractmethod
+    def observation_space(self) -> gym.spaces.Dict:
+        raise NotImplementedError()
+
+    # TODO can we keep Environment clean from ray dependencies?
+    @property
+    @abc.abstractmethod
+    def action_space(self) -> gym.spaces.Dict:
         raise NotImplementedError()

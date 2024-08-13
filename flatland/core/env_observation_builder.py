@@ -11,6 +11,7 @@ multi-agent environments.
 from typing import Optional, List
 
 import numpy as np
+from ray.rllib.utils.typing import MultiAgentDict
 
 from flatland.core.env import Environment
 
@@ -21,8 +22,17 @@ class ObservationBuilder:
     """
 
     def __init__(self):
-        self.env = None
+        self.env: Environment = None
 
+    # TODO can we keep ObservationBuilder clean from ray dependencies?
+
+    def get_observation_space(self) -> MultiAgentDict:
+        """
+        Required as observation builder only instantiated in env.reset() and not during env initialization.
+        """
+        raise NotImplementedError()
+
+    # TODO bad code smell
     def set_env(self, env: Environment):
         self.env: Environment = env
 

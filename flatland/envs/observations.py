@@ -2,9 +2,11 @@
 Collection of environment-specific ObservationBuilder.
 """
 import collections
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple, Any, Sequence
 
+import gymnasium as gym
 import numpy as np
+import numpy.typing as npt
 
 from flatland.core.env import Environment
 from flatland.core.env_observation_builder import ObservationBuilder
@@ -532,7 +534,28 @@ class TreeObsForRailEnv(ObservationBuilder):
         return int((direction + 2) % 4)
 
 
+class RailEnvSpace(gym.spaces.Space):
+    def __init__(
+        self,
+        obs_builder: ObservationBuilder,
+        shape: Sequence[int] | None = None,
+        dtype: npt.DTypeLike | None = None,
+        seed: int | np.random.Generator | None = None,
+
+    ):
+        super().__init__(shape, dtype, seed)
+        self.obs_builder=obs_builder
+    def sample(self, mask: Any | None = None) :
+        # get = self.obs_builder.get()
+        get = self.obs_builder.get_many(self.obs_builder.env.get_agent_handles())
+        return get
+
+    def contains(self, x: Any) -> bool:
+        return True
+
 class GlobalObsForRailEnv(ObservationBuilder):
+
+
     """
     Gives a global observation of the entire rail environment.
     The observation is composed of the following elements:
@@ -554,6 +577,21 @@ class GlobalObsForRailEnv(ObservationBuilder):
     def __init__(self):
         super(GlobalObsForRailEnv, self).__init__()
 
+    def get_observation_space(self):
+        spaces_dict = gym.spaces.Dict(spaces={
+            i: gym.spaces.Tuple(spaces=[
+                # transition map
+                RailEnvSpace(self, shape=(self.env.height, self.env.width, 16), dtype=np.float64),
+                # obs_agents_state
+                RailEnvSpace(self, shape=(self.env.height, self.env.width, 5), dtype=np.float64),
+                # obs_targets
+                RailEnvSpace(self, shape=(self.env.height, self.env.width, 2), dtype=np.float64)
+            ])
+            for i in range(self.env.number_of_agents)
+        })
+        return spaces_dict
+
+    # TODO bad code smell
     def set_env(self, env: Environment):
         super().set_env(env)
 
@@ -580,10 +618,6 @@ class GlobalObsForRailEnv(ObservationBuilder):
         obs_targets = np.zeros((self.env.height, self.env.width, 2))
         obs_agents_state = np.zeros((self.env.height, self.env.width, 5)) - 1
 
-        # TODO can we do this more elegantly?
-        # for r in range(self.env.height):
-        #     for c in range(self.env.width):
-        #         obs_agents_state[(r, c)][4] = 0
         obs_agents_state[:, :, 4] = 0
 
         obs_agents_state[agent_virtual_position][0] = agent.direction
