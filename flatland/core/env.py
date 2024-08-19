@@ -4,8 +4,7 @@ The base Environment class is adapted from rllib.env.MultiAgentEnv
 (https://github.com/ray-project/ray).
 """
 import abc
-
-import gymnasium as gym
+from typing import List
 
 
 class Environment:
@@ -91,21 +90,9 @@ class Environment:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_agent_handles(self):
+    def get_agent_handles(self) -> List[int]:
         """
         Returns a list of agents' handles to be used as keys in the step()
         function.
         """
-        raise NotImplementedError()
-
-    # TODO can we keep Environment clean from ray dependencies?
-    @property
-    @abc.abstractmethod
-    def observation_space(self) -> gym.spaces.Dict:
-        raise NotImplementedError()
-
-    # TODO can we keep Environment clean from ray dependencies?
-    @property
-    @abc.abstractmethod
-    def action_space(self) -> gym.spaces.Dict:
         raise NotImplementedError()

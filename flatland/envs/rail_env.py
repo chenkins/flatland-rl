@@ -4,10 +4,7 @@ Definition of the RailEnv environment.
 import random
 from typing import List, Optional, Dict, Tuple
 
-import gymnasium as gym
 import numpy as np
-from gymnasium.vector.utils import spaces
-from ray.rllib.utils import override
 
 # from flatland.envs.timetable_generators import timetable_generator
 import flatland.envs.timetable_generators as ttg
@@ -87,8 +84,6 @@ class RailEnv(Environment):
     For Round 2, they will be passed to the constructor as arguments, to allow for more flexibility.
 
     """
-
-
 
     # Epsilon to avoid rounding errors
     epsilon = 0.01
@@ -198,15 +193,6 @@ class RailEnv(Environment):
         self.num_resets = 0
         self.distance_map = DistanceMap(self.agents, self.height, self.width)
 
-        # TODO keep RailEnv clean from ray dependencies - wrap existing observation_space? put action_space into wrapper?
-        self._action_space = (
-            spaces.Dict({
-                i: gym.spaces.Discrete(5)
-                for i in range(self.number_of_agents)
-            }))
-
-        self._observation_space = obs_builder_object.get_observation_space()
-
         self._seed(seed=random_seed)
 
         self.agent_positions = None
@@ -218,16 +204,6 @@ class RailEnv(Environment):
         self.list_actions = []  # save actions in here
 
         self.motionCheck = ac.MotionCheck()
-
-    @property
-    @override(Environment)
-    def observation_space(self) -> gym.spaces.Dict:
-        return self._observation_space
-
-    @property
-    @override(Environment)
-    def action_space(self) -> gym.spaces.Dict:
-        return self._action_space
 
     def _seed(self, seed):
         self.np_random, seed = seeding.np_random(seed)
@@ -243,8 +219,8 @@ class RailEnv(Environment):
         return [seed]
 
     # no more agent_handles
-    def get_agent_handles(self):
-        return range(self.get_num_agents())
+    def get_agent_handles(self) -> List[int]:
+        return list(range(self.get_num_agents()))
 
     def get_num_agents(self) -> int:
         return len(self.agents)

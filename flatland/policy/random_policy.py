@@ -8,7 +8,7 @@ from ray.rllib.utils import override
 from ray.rllib.utils.typing import AlgorithmConfigDict, TensorStructType, TensorType
 
 
-# TODO ray only?
+# TODO use ray policy directly?
 class RandomPolicy(Policy):
 
     def __init__(
