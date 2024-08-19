@@ -1,6 +1,7 @@
 import pytest
 from ray.rllib import RolloutWorker
 from ray.rllib.algorithms import AlgorithmConfig
+from ray.rllib.examples.policy.random_policy import RandomPolicy
 
 from flatland.core.env_observation_builder import DummyObservationBuilder
 from flatland.envs.line_generators import sparse_line_generator
@@ -8,7 +9,6 @@ from flatland.envs.observations import GlobalObsForRailEnv
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_env_wrappers import ray_multi_agent_env_wrapper
 from flatland.envs.rail_generators import sparse_rail_generator
-from flatland.policy.random_policy import RandomPolicy
 
 
 # TODO same for training?
