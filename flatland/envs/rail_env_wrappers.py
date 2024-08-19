@@ -3,18 +3,16 @@ from typing import Tuple, Set, Optional
 
 import gymnasium as gym
 from gymnasium.vector.utils import spaces
-from ray.rllib import RolloutWorker, MultiAgentEnv
-from ray.rllib.algorithms import AlgorithmConfig
+from ray.rllib import MultiAgentEnv
 from ray.rllib.utils import override
 from ray.rllib.utils.typing import MultiAgentDict, AgentID
 
-from core.env import Environment
-from envs.rail_env import RailEnv
-from envs.rail_env_action import RailEnvActions
-from policy.random_policy import RandomPolicy
+from flatland.core.env import Environment
+from flatland.envs.rail_env import RailEnv
+from flatland.envs.rail_env_action import RailEnvActions
 
 
-# TODO petting zoo wrapper
+# TODO petting zoo wrapper, see also flatland_wrappers in contribs
 # TODO training with policy etc.? sample policies whole adrian zoo?
 
 
@@ -90,29 +88,8 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
     def get_agent_handles(self):
         return self.wrap.get_agent_handles()
 
+    # TODO rendering
+
 
 def ray_multi_agent_env_wrapper(wrap: RailEnv) -> RayMultiAgentWrapper:
     return RayMultiAgentWrapper(wrap)
-
-
-if __name__ == '__main__':
-    number_of_agents = 5
-    rail_env = RailEnv(30, 30, number_of_agents=number_of_agents)
-    rail_env.reset()
-
-    # https://discuss.ray.io/t/multi-agent-where-does-the-first-structure-comes-from/7010/8
-    env = ray_multi_agent_env_wrapper(wrap=rail_env)
-    worker = RolloutWorker(
-        env_creator=lambda _: env,
-        config=AlgorithmConfig().multi_agent(
-            # TODO can we not have shared policy?
-            policies={
-                f"main{aid}": (RandomPolicy, env.observation_space[aid], env.action_space[aid], {})
-                for aid in env.get_agent_ids()
-            },
-            policy_mapping_fn=(
-                lambda aid, episode, **kwargs: f"main{aid}"
-            )
-        )
-    )
-    print(worker.sample())

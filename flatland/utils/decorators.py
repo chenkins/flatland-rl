@@ -15,3 +15,7 @@ def enable_infrastructure_lru_cache(*args, **kwargs):
 def send_infrastructure_data_change_signal_to_reset_lru_cache():
     for func in infrastructure_lru_cache_functions:
         func.cache_clear()
+
+
+def candidate_for_deletion(f):
+    return f

@@ -2,7 +2,7 @@
 Collection of environment-specific ObservationBuilder.
 """
 import collections
-from typing import Optional, List, Dict, Tuple, Any, Sequence
+from typing import Optional, List, Dict, Any, Sequence
 
 import gymnasium as gym
 import numpy as np
@@ -31,6 +31,26 @@ Node = collections.namedtuple('Node', 'dist_own_target_encountered '
                                       'speed_min_fractional '
                                       'num_agents_ready_to_depart '
                                       'childs')
+
+
+class TreeObsSpace(gym.Space):
+    def __init__(self):
+        super().__init__(shape=None)
+
+    def sample(self, mask: Any | None = None):
+        # TODO TreeObsSpace TreeObsSpace use https://github.com/instadeepai/Mava/blob/0.0.9/mava/wrappers/flatland.py
+        return Node(dist_own_target_encountered=0, dist_other_target_encountered=0,
+                    dist_other_agent_encountered=0, dist_potential_conflict=0,
+                    dist_unusable_switch=0, dist_to_next_branch=0,
+                    dist_min_to_target=0,
+                    num_agents_same_direction=0, num_agents_opposite_direction=0,
+                    num_agents_malfunctioning=0,
+                    speed_min_fractional=0,
+                    num_agents_ready_to_depart=0,
+                    childs={})
+
+    def contains(self, x: Any) -> bool:
+        return isinstance(x, Node)
 
 
 class TreeObsForRailEnv(ObservationBuilder):
@@ -213,7 +233,6 @@ class TreeObsForRailEnv(ObservationBuilder):
         # Here information about the agent itself is stored
         distance_map = self.env.distance_map.get()
 
-        # was referring to TreeObsForRailEnv.Node
         root_node_observation = Node(dist_own_target_encountered=0, dist_other_target_encountered=0,
                                      dist_other_agent_encountered=0, dist_potential_conflict=0,
                                      dist_unusable_switch=0, dist_to_next_branch=0,
@@ -253,6 +272,9 @@ class TreeObsForRailEnv(ObservationBuilder):
         self.env.dev_obs_dict[handle] = visited
 
         return root_node_observation
+
+    def get_observation_space(self, handle: int = 0):
+        return TreeObsSpace()
 
     def _explore_branch(self, handle, position, direction, tot_dist, depth):
         """
@@ -442,7 +464,6 @@ class TreeObsForRailEnv(ObservationBuilder):
             dist_to_next_branch = tot_dist
             dist_min_to_target = distance_map_handle[position[0], position[1], direction]
 
-        # TreeObsForRailEnv.Node
         node = Node(dist_own_target_encountered=own_target_encountered,
                     dist_other_target_encountered=other_target_encountered,
                     dist_other_agent_encountered=other_agent_encountered,
@@ -587,7 +608,6 @@ class GlobalObsForRailEnv(ObservationBuilder):
             RailEnvSpace(self, shape=(self.env.height, self.env.width, 2), dtype=np.float64)
         ])
 
-    # TODO bad code smell
     def set_env(self, env: Environment):
         super().set_env(env)
 
@@ -725,15 +745,6 @@ class LocalObsForRailEnv(ObservationBuilder):
 
         direction = np.identity(4)[agent.direction]
         return local_rail_obs, obs_map_state, obs_other_agents_state, direction
-
-    def get_many(self, handles: Optional[List[int]] = None) -> Dict[
-        int, Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]:
-        """
-        Called whenever an observation has to be computed for the `env` environment, for each agent with handle
-        in the `handles` list.
-        """
-
-        return super().get_many(handles)
 
     def field_of_view(self, position, direction, state=None):
         # Compute the local field of view for an agent in the environment

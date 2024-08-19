@@ -24,10 +24,9 @@ class ObservationBuilder:
     def __init__(self):
         self.env: Environment = None
 
-    # TODO implement for all observation builders!
     def get_observation_space(self, handle: int = 0) -> gym.Space:
         """
-        Required as observation builder only instantiated in env.reset() and not during env initialization.
+        Takes in agent and returns the observation space for that agent.
         """
         raise NotImplementedError()
 
@@ -100,8 +99,8 @@ class DummyObservationBuilder(ObservationBuilder):
     def reset(self):
         pass
 
-    def get_many(self, handles: Optional[List[int]] = None) -> bool:
-        return True
-
     def get(self, handle: int = 0) -> bool:
         return True
+
+    def get_observation_space(self, handle: int = 0):
+        return gym.spaces.Discrete(2)
