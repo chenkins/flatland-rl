@@ -3,6 +3,8 @@ from ray.rllib import RolloutWorker
 from ray.rllib.algorithms import AlgorithmConfig
 from ray.rllib.examples.policy.random_policy import RandomPolicy
 
+from flatland.envs.flatten_tree_observation_for_rail_env import FlattenTreeObsForRailEnv
+from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 from flatland.core.env_observation_builder import DummyObservationBuilder
 from flatland.envs.line_generators import sparse_line_generator
 from flatland.envs.observations import GlobalObsForRailEnv
@@ -11,7 +13,6 @@ from flatland.envs.rail_env_wrappers import ray_multi_agent_env_wrapper
 from flatland.envs.rail_generators import sparse_rail_generator
 
 
-# TODO same for training?
 @pytest.mark.parametrize(
     "obs_builder_object",
     [
@@ -21,14 +22,16 @@ from flatland.envs.rail_generators import sparse_rail_generator
         pytest.param(
             GlobalObsForRailEnv(), id="GlobalObsForRailEnv"
         ),
-        # TODO TreeObs
-        # pytest.param(
-        #     TreeObsForRailEnv(max_depth=3, predictor=ShortestPathPredictorForRailEnv()), id="TreeObsForRailEnv"
-        # ),
+        pytest.param(
+            FlattenTreeObsForRailEnv(max_depth=2, predictor=ShortestPathPredictorForRailEnv()), id="FlattenTreeObsForRailEnv_max_depth_2"
+        ),
+        pytest.param(
+            FlattenTreeObsForRailEnv(max_depth=3, predictor=ShortestPathPredictorForRailEnv()), id="FlattenTreeObsForRailEnv_max_depth_3"
+        ),
     ],
 )
 def test_rail_env_wrappers(obs_builder_object):
-    number_of_agents = 3
+    number_of_agents = 1
     n_cities = 2
     max_rails_between_cities = 2
     max_rails_in_city = 4

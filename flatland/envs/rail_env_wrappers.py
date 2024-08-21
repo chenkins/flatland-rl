@@ -69,6 +69,8 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
                 del infos[i]
 
         truncateds = {"__all__": False}
+        # convert np.ndarray to MultiAgentDict
+        obs = {i: obs[i] for i in self.get_agent_ids()}
         return obs, rewards, terminateds, truncateds, infos
 
     @override(Environment)
@@ -78,7 +80,19 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
         seed: Optional[int] = None,
         options: Optional[dict] = None,
     ) -> Tuple[MultiAgentDict, MultiAgentDict]:
-        return self.wrap.reset()
+        obs, infos = self.wrap.reset()
+        # convert np.ndarray to MultiAgentDict
+        obs = {i: obs[i] for i in self.get_agent_ids()}
+        infos = {
+            i:
+                {
+                    'action_required': infos['action_required'][i],
+                    'malfunction': infos['malfunction'][i],
+                    'speed': infos['speed'][i],
+                    'state': infos['state'][i]
+                } for i in self.get_agent_ids()
+        }
+        return obs, infos
 
     @override(MultiAgentEnv)
     def get_agent_ids(self) -> Set[AgentID]:
@@ -88,7 +102,8 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
     def get_agent_handles(self):
         return self.wrap.get_agent_handles()
 
-    # TODO rendering
+
+# TODO rendering
 
 
 def ray_multi_agent_env_wrapper(wrap: RailEnv) -> RayMultiAgentWrapper:

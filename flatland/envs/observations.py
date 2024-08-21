@@ -17,6 +17,7 @@ from flatland.envs.agent_utils import EnvAgent
 from flatland.envs.fast_methods import fast_argmax, fast_count_nonzero, fast_position_equal, fast_delete, fast_where
 from flatland.envs.step_utils.states import TrainState
 from flatland.utils.ordered_set import OrderedSet
+from utils.decorators import candidate_for_deletion
 
 Node = collections.namedtuple('Node', 'dist_own_target_encountered '
                                       'dist_other_target_encountered '
@@ -31,26 +32,6 @@ Node = collections.namedtuple('Node', 'dist_own_target_encountered '
                                       'speed_min_fractional '
                                       'num_agents_ready_to_depart '
                                       'childs')
-
-
-class TreeObsSpace(gym.Space):
-    def __init__(self):
-        super().__init__(shape=None)
-
-    def sample(self, mask: Any | None = None):
-        # TODO TreeObsSpace TreeObsSpace use https://github.com/instadeepai/Mava/blob/0.0.9/mava/wrappers/flatland.py
-        return Node(dist_own_target_encountered=0, dist_other_target_encountered=0,
-                    dist_other_agent_encountered=0, dist_potential_conflict=0,
-                    dist_unusable_switch=0, dist_to_next_branch=0,
-                    dist_min_to_target=0,
-                    num_agents_same_direction=0, num_agents_opposite_direction=0,
-                    num_agents_malfunctioning=0,
-                    speed_min_fractional=0,
-                    num_agents_ready_to_depart=0,
-                    childs={})
-
-    def contains(self, x: Any) -> bool:
-        return isinstance(x, Node)
 
 
 class TreeObsForRailEnv(ObservationBuilder):
@@ -272,9 +253,6 @@ class TreeObsForRailEnv(ObservationBuilder):
         self.env.dev_obs_dict[handle] = visited
 
         return root_node_observation
-
-    def get_observation_space(self, handle: int = 0):
-        return TreeObsSpace()
 
     def _explore_branch(self, handle, position, direction, tot_dist, depth):
         """
@@ -660,7 +638,7 @@ class GlobalObsForRailEnv(ObservationBuilder):
                 obs_agents_state[other_agent.initial_position][4] += 1
         return self.rail_obs, obs_agents_state, obs_targets
 
-
+@candidate_for_deletion
 class LocalObsForRailEnv(ObservationBuilder):
     """
     !!!!!!WARNING!!! THIS IS DEPRACTED AND NOT UPDATED TO FLATLAND 2.0!!!!!
