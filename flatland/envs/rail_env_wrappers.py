@@ -13,7 +13,6 @@ from flatland.envs.rail_env_action import RailEnvActions
 
 
 # TODO petting zoo wrapper, see also flatland_wrappers in contribs
-# TODO training with policy etc.? sample policies whole adrian zoo?
 
 
 # TODO generalize to wrapping Environment instead of RailEnv?
@@ -59,6 +58,9 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
                 } for i in self.get_agent_ids()
         }
 
+        # convert np.ndarray to MultiAgentDict
+        obs = {i: obs[i] for i in self.get_agent_ids()}
+
         # report obs/done/info only once per agent per episode,
         # see https://github.com/ray-project/ray/issues/10761
         terminateds = copy.deepcopy(terminateds)
@@ -69,8 +71,7 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
                 del infos[i]
 
         truncateds = {"__all__": False}
-        # convert np.ndarray to MultiAgentDict
-        obs = {i: obs[i] for i in self.get_agent_ids()}
+
         return obs, rewards, terminateds, truncateds, infos
 
     @override(Environment)
@@ -81,8 +82,10 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
         options: Optional[dict] = None,
     ) -> Tuple[MultiAgentDict, MultiAgentDict]:
         obs, infos = self.wrap.reset()
+
         # convert np.ndarray to MultiAgentDict
         obs = {i: obs[i] for i in self.get_agent_ids()}
+
         infos = {
             i:
                 {
@@ -92,6 +95,7 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
                     'state': infos['state'][i]
                 } for i in self.get_agent_ids()
         }
+
         return obs, infos
 
     @override(MultiAgentEnv)
