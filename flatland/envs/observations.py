@@ -577,7 +577,12 @@ class GlobalObsForRailEnv(ObservationBuilder):
         super(GlobalObsForRailEnv, self).__init__()
 
     def get_observation_space(self, handle: int = 0):
-        return gym.spaces.Tuple(spaces=[
+        return self.observation_space
+
+    def set_env(self, env: Environment):
+        super().set_env(env)
+        # N.B.
+        self.observation_space = gym.spaces.Tuple(spaces=[
             # transition map
             RailEnvSpace(self, shape=(self.env.height, self.env.width, 16), dtype=np.float64),
             # obs_agents_state
@@ -585,9 +590,6 @@ class GlobalObsForRailEnv(ObservationBuilder):
             # obs_targets
             RailEnvSpace(self, shape=(self.env.height, self.env.width, 2), dtype=np.float64)
         ])
-
-    def set_env(self, env: Environment):
-        super().set_env(env)
 
     def reset(self):
         self.rail_obs = np.zeros((self.env.height, self.env.width, 16))
