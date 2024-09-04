@@ -10,6 +10,7 @@ from ray.rllib.utils.typing import MultiAgentDict, AgentID
 from flatland.core.env import Environment
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_env_action import RailEnvActions
+from utils.rendertools import RenderTool
 
 
 # TODO petting zoo wrapper, see also flatland_wrappers in contribs
@@ -18,8 +19,13 @@ from flatland.envs.rail_env_action import RailEnvActions
 # TODO generalize to wrapping Environment instead of RailEnv?
 class RayMultiAgentWrapper(MultiAgentEnv, Environment):
 
-    def __init__(self, wrap: RailEnv):
+    def __init__(self, wrap: RailEnv, render_mode: Optional[str] = None):
         self.wrap: RailEnv = wrap
+        self.render_mode = render_mode
+        self.env_renderer = None
+        if render_mode is not None:
+            self.env_renderer = RenderTool(wrap)
+
         self.action_space: gym.spaces.Dict = spaces.Dict({
             i: gym.spaces.Discrete(5)
             for i in range(self.wrap.number_of_agents)
@@ -71,6 +77,11 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
                 del infos[i]
 
         truncateds = {"__all__": False}
+        print(self.wrap._elapsed_steps)
+
+        if self.render_mode is not None:
+            # We render the initial step and show the obsered cells as colored boxes
+            self.env_renderer.render_env(show=True, frames=True, show_observations=True, show_predictions=False)
 
         return obs, rewards, terminateds, truncateds, infos
 
@@ -107,8 +118,5 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
         return self.wrap.get_agent_handles()
 
 
-# TODO rendering
-
-
-def ray_multi_agent_env_wrapper(wrap: RailEnv) -> RayMultiAgentWrapper:
-    return RayMultiAgentWrapper(wrap)
+def ray_multi_agent_env_wrapper(wrap: RailEnv, render_mode: Optional[str] = None) -> RayMultiAgentWrapper:
+    return RayMultiAgentWrapper(wrap, render_mode)
