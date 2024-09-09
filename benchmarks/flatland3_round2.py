@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 from ray.rllib import RolloutWorker
 from ray.rllib.algorithms import AlgorithmConfig
@@ -8,6 +10,8 @@ from flatland.envs.observations import GlobalObsForRailEnv
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_env_wrappers import ray_multi_agent_env_wrapper
 from flatland.envs.rail_generators import sparse_rail_generator
+
+logger = logging.getLogger(__name__)
 
 
 def _get_env(n_agents=10, x_dim=20, y_dim=30, n_cities=2):
@@ -65,7 +69,7 @@ def _get_env(n_agents=10, x_dim=20, y_dim=30, n_cities=2):
 def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10):
     total_reward = 0
     for i_envs_run in range(n_envs_run):
-        print(f"{label} start {i_envs_run}/{n_envs_run}")
+        logger.info(f"{label} start {i_envs_run+1}/{n_envs_run}")
         env = _get_env(n_agents=n_agents, x_dim=x_dim, y_dim=y_dim, n_cities=n_cities)
         worker = RolloutWorker(
             env_creator=lambda _: env,
@@ -92,10 +96,10 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10):
         # get first complete episode
         # TODO verify either max_episode_steps reached or done
         cumulative_reward = np.sum(batch['main']['rewards'][np.argwhere(batch['main']['eps_id'] == batch['main']['eps_id'][0])])
-        print(f"{label} end {i_envs_run}/{n_envs_run}:")
+        logger.info(f"{label} end {i_envs_run+1}/{n_envs_run}:")
         # https://flatland.aicrowd.com/challenges/flatland3/eval.html
         normalized_reward = (cumulative_reward / (env.wrap._max_episode_steps * env.wrap.get_num_agents())) + 1
-        print(normalized_reward)
+        logger.info(normalized_reward)
         total_reward += normalized_reward
     # assert env.wrap._max_episode_steps >= batch.env_steps()
     return total_reward
@@ -114,11 +118,11 @@ if __name__ == '__main__':
     tot += main("F3:R2:Test_06", n_agents=80, x_dim=40, y_dim=60, n_cities=9, n_envs_run=n_envs_run)
     tot += main("F3:R2:Test_07", n_agents=80, x_dim=60, y_dim=40, n_cities=13, n_envs_run=n_envs_run)
     tot += main("F3:R2:Test_08", n_agents=80, x_dim=60, y_dim=60, n_cities=17, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_09", n_agents=100, x_dim=80, y_dim=120, n_cities=21, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_10", n_agents=100, x_dim=100, y_dim=80, n_cities=25, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_11", n_agents=200, x_dim=100, y_dim=100, n_cities=29, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_12", n_agents=200, x_dim=150, y_dim=150, n_cities=33, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_13", n_agents=400, x_dim=150, y_dim=150, n_cities=37, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_14", n_agents=425, x_dim=158, y_dim=158, n_cities=41, n_envs_run=n_envs_run)
-    print("===============================================================")
-    print(tot / (15 * n_envs_run))
+    tot += main("F3:R2:Test_09", n_agents=100, x_dim=80, y_dim=120, n_cities=21, n_envs_run=n_envs_run)
+    tot += main("F3:R2:Test_10", n_agents=100, x_dim=100, y_dim=80, n_cities=25, n_envs_run=n_envs_run)
+    tot += main("F3:R2:Test_11", n_agents=200, x_dim=100, y_dim=100, n_cities=29, n_envs_run=n_envs_run)
+    tot += main("F3:R2:Test_12", n_agents=200, x_dim=150, y_dim=150, n_cities=33, n_envs_run=n_envs_run)
+    tot += main("F3:R2:Test_13", n_agents=400, x_dim=150, y_dim=150, n_cities=37, n_envs_run=n_envs_run)
+    tot += main("F3:R2:Test_14", n_agents=425, x_dim=158, y_dim=158, n_cities=41, n_envs_run=n_envs_run)
+    logger.info("===============================================================")
+    logger.info(tot / (15 * n_envs_run))
