@@ -17,7 +17,7 @@ from flatland.envs.agent_utils import EnvAgent
 from flatland.envs.fast_methods import fast_argmax, fast_count_nonzero, fast_position_equal, fast_delete, fast_where
 from flatland.envs.step_utils.states import TrainState
 from flatland.utils.ordered_set import OrderedSet
-from utils.decorators import candidate_for_deletion
+from flatland.utils.decorators import candidate_for_deletion
 
 Node = collections.namedtuple('Node', 'dist_own_target_encountered '
                                       'dist_other_target_encountered '

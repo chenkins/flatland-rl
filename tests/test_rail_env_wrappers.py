@@ -1,13 +1,12 @@
-from typing import Union, List, Optional, Dict, Tuple, Callable
+from typing import Callable
 
 import pytest
-from ray.rllib import RolloutWorker, Policy
+from ray.rllib import RolloutWorker
 from ray.rllib.algorithms import AlgorithmConfig
-from ray.rllib.examples.policy.random_policy import RandomPolicy
-from ray.rllib.utils.typing import TensorStructType, TensorType
 from ray.tune import run_experiments, register_env
 
 from core.env_observation_builder import ObservationBuilder
+from flatland.contrib.policies.DeadlockAvoidancePolicy import DeadLockAvoidancePolicy
 from flatland.core.env_observation_builder import DummyObservationBuilder
 from flatland.envs.flatten_tree_observation_for_rail_env import FlattenTreeObsForRailEnv
 from flatland.envs.line_generators import sparse_line_generator
@@ -16,16 +15,6 @@ from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_env_wrappers import ray_multi_agent_env_wrapper
 from flatland.envs.rail_generators import sparse_rail_generator
-
-
-# TODO shortest_path_deadlock_avoidance_policy run evaluation
-class ShortestPathDeadlockAvoidanceAlgorithm(Policy):
-    def compute_actions(self, obs_batch: Union[List[TensorStructType], TensorStructType], state_batches: Optional[List[TensorType]] = None,
-                        prev_action_batch: Union[List[TensorStructType], TensorStructType] = None,
-                        prev_reward_batch: Union[List[TensorStructType], TensorStructType] = None, info_batch: Optional[Dict[str, list]] = None,
-                        episodes: Optional[List["Episode"]] = None, explore: Optional[bool] = None, timestep: Optional[int] = None, **kwargs) -> Tuple[
-        TensorType, List[TensorType], Dict[str, TensorType]]:
-        pass
 
 
 def _get_env(obs_builder_object):
@@ -58,6 +47,7 @@ def _get_env(obs_builder_object):
 @pytest.mark.parametrize(
     "obs_builder_object",
     [
+        # pytest.param(DeadLockAvoidancePolicy(), id="DeadLockAvoidancePolicy"),
         pytest.param(
             DummyObservationBuilder(), id="DummyObservationBuilder"
         ),
@@ -78,7 +68,7 @@ def test_rail_env_wrappers_random_rollout(obs_builder_object: ObservationBuilder
         env_creator=lambda _: env,
         config=AlgorithmConfig().experimental(_disable_preprocessor_api=True, _disable_execution_plan_api=True).multi_agent(
             policies={
-                f"main": (RandomPolicy, env.observation_space[aid], env.action_space[aid], {})
+                f"main": (DeadLockAvoidancePolicy, env.observation_space[aid], env.action_space[aid], {})
                 for aid in env.get_agent_ids()
             },
             policy_mapping_fn=(
@@ -86,6 +76,10 @@ def test_rail_env_wrappers_random_rollout(obs_builder_object: ObservationBuilder
             )
         )
     )
+    # TODO very dirty....
+    for p in worker.policy_map.values():
+        p.env = worker.env
+        p.action_size = 5
     worker.sample()
 
 
@@ -119,4 +113,10 @@ def test_rail_env_wrappers_training(obs_builder: Callable[[], ObservationBuilder
     })
 
 # TODO 0.6 bei 1000 Episode
-# TODO whole adrian zoo of policies run for one training epoch for illustration
+# TODO whole adrian zoo of contrib.policies run for one training epoch for illustration
+
+# https://www.aicrowd.com/challenges/flatland-3/leaderboards?challenge_leaderboard_extra_id=965&challenge_round_id=1083&post_challenge=true
+# TODO adrian OR = deadlockavoidance: 30.134 	0.3620 	OR 	47
+
+# https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
+# https://flatland.aicrowd.com/challenges/flatland3/test-submissions-local.html

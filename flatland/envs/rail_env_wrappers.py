@@ -10,7 +10,7 @@ from ray.rllib.utils.typing import MultiAgentDict, AgentID
 from flatland.core.env import Environment
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_env_action import RailEnvActions
-from utils.rendertools import RenderTool
+from flatland.utils.rendertools import RenderTool
 
 
 # TODO petting zoo wrapper, see also flatland_wrappers in contribs
@@ -77,7 +77,6 @@ class RayMultiAgentWrapper(MultiAgentEnv, Environment):
                 del infos[i]
 
         truncateds = {"__all__": False}
-        print(self.wrap._elapsed_steps)
 
         if self.render_mode is not None:
             # We render the initial step and show the obsered cells as colored boxes

@@ -7,7 +7,7 @@ from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.envs.line_generators import sparse_line_generator
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import sparse_rail_generator
-from utils.decorators import candidate_for_deletion
+from flatland.utils.decorators import candidate_for_deletion
 
 random.seed(100)
 np.random.seed(100)

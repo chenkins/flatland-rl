@@ -14,7 +14,7 @@ from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import sparse_rail_generator
 from flatland.utils.misc import str2bool
 from flatland.utils.rendertools import RenderTool
-from utils.decorators import candidate_for_deletion
+from flatland.utils.decorators import candidate_for_deletion
 
 random.seed(100)
 np.random.seed(100)

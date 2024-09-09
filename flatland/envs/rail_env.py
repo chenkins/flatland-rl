@@ -30,6 +30,7 @@ from flatland.utils import seeding
 from flatland.utils.decorators import send_infrastructure_data_change_signal_to_reset_lru_cache, \
     enable_infrastructure_lru_cache
 from flatland.utils.rendertools import RenderTool, AgentRenderVariant
+from flatland.utils.decorators import candidate_for_deletion
 
 
 class RailEnv(Environment):
@@ -699,6 +700,7 @@ class RailEnv(Environment):
         print("DEPRECATED call to env.save() - pls call RailEnvPersister.save()")
         persistence.RailEnvPersister.save(self, filename)
 
+    @candidate_for_deletion
     def render(self, mode="rgb_array", gl="PGL", agent_render_variant=AgentRenderVariant.ONE_STEP_BEHIND,
                show_debug=False, clear_debug_text=True, show=False,
                screen_height=600, screen_width=800,
@@ -726,7 +728,7 @@ class RailEnv(Environment):
         return self.update_renderer(mode=mode, show=show, show_observations=show_observations,
                                     show_predictions=show_predictions,
                                     show_rowcols=show_rowcols, return_image=return_image)
-
+    @candidate_for_deletion
     def initialize_renderer(self, mode, gl,
                             agent_render_variant,
                             show_debug,
@@ -744,6 +746,7 @@ class RailEnv(Environment):
         self.renderer.show = show
         self.renderer.reset()
 
+    @candidate_for_deletion
     def update_renderer(self, mode, show, show_observations, show_predictions,
                         show_rowcols, return_image):
         """
@@ -762,6 +765,7 @@ class RailEnv(Environment):
         if mode == 'rgb_array':
             return image[:, :, :3]
 
+    @candidate_for_deletion
     def close(self):
         """
         This methods closes any renderer window.
