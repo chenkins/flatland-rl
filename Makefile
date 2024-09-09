@@ -4,11 +4,8 @@
 help: ## display this help section
 	@awk 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?##/ {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-install-deps: ## install the package-s pinned dev dependencies
+install-deps: ## install the package-s dev dependencies
 	python -m pip install -r requirements-dev.txt
-
-update-deps: ## pip-tools keeps your pinned dependencies fresh.
-	tox -e requirements
 
 lint: ## check style with flake8
 	tox -e lint
@@ -22,5 +19,3 @@ coverage: ## check code coverage
 docs: ## generate Sphinx HTML documentation, including API docs
 	tox -e docs
 
-benchmarks:
-	tox -e benchmarks
