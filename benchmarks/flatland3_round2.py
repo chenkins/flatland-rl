@@ -69,7 +69,7 @@ def _get_env(n_agents=10, x_dim=20, y_dim=30, n_cities=2):
 def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10):
     total_reward = 0
     for i_envs_run in range(n_envs_run):
-        logger.info(f"{label} start {i_envs_run+1}/{n_envs_run}")
+        logger.info(f"{label} start {i_envs_run + 1}/{n_envs_run}")
         env = _get_env(n_agents=n_agents, x_dim=x_dim, y_dim=y_dim, n_cities=n_cities)
         worker = RolloutWorker(
             env_creator=lambda _: env,
@@ -96,7 +96,7 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10):
         # get first complete episode
         # TODO verify either max_episode_steps reached or done
         cumulative_reward = np.sum(batch['main']['rewards'][np.argwhere(batch['main']['eps_id'] == batch['main']['eps_id'][0])])
-        logger.info(f"{label} end {i_envs_run+1}/{n_envs_run}:")
+        logger.info(f"{label} end {i_envs_run + 1}/{n_envs_run}:")
         # https://flatland.aicrowd.com/challenges/flatland3/eval.html
         normalized_reward = (cumulative_reward / (env.wrap._max_episode_steps * env.wrap.get_num_agents())) + 1
         logger.info(normalized_reward)
@@ -106,6 +106,8 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+
     # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
     tot = 0
     n_envs_run = 10
