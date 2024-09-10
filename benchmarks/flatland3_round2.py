@@ -1,5 +1,7 @@
 import logging
+import sys
 
+import click
 import numpy as np
 from ray.rllib import RolloutWorker
 from ray.rllib.algorithms import AlgorithmConfig
@@ -11,7 +13,7 @@ from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_env_wrappers import ray_multi_agent_env_wrapper
 from flatland.envs.rail_generators import sparse_rail_generator
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 def _get_env(n_agents=10, x_dim=20, y_dim=30, n_cities=2):
@@ -104,29 +106,45 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10):
     return total_reward
 
 
-if __name__ == '__main__':
-    logger.setLevel(logging.INFO)
+# https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
+configs = {
+    "F3:R2:Test_00": [10, 20, 30, 2],
+    "F3:R2:Test_01": [10, 30, 30, 2],
+    "F3:R2:Test_02": [50, 30, 30, 3],
+    "F3:R2:Test_03": [50, 30, 35, 3],
+    "F3:R2:Test_04": [80, 35, 30, 5],
+    "F3:R2:Test_05": [80, 45, 35, 7],
+    "F3:R2:Test_06": [80, 40, 60, 9],
+    "F3:R2:Test_07": [80, 60, 40, 13],
+    "F3:R2:Test_08": [80, 60, 60, 17],
+    "F3:R2:Test_09": [100, 80, 120, 21],
+    "F3:R2:Test_10": [100, 100, 80, 25],
+    "F3:R2:Test_11": [200, 100, 100, 29],
+    "F3:R2:Test_12": [200, 150, 150, 33],
+    "F3:R2:Test_13": [400, 150, 150, 37],
+    "F3:R2:Test_14": [425, 158, 158, 41]
+}
 
-    # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
-    tot = 0
-    n_envs_run = 1
-    # tot += main("F3:R2:Test_00", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_01", n_agents=10, x_dim=30, y_dim=30, n_cities=2, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_02", n_agents=50, x_dim=30, y_dim=30, n_cities=3, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_03", n_agents=50, x_dim=30, y_dim=35, n_cities=3, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_04", n_agents=80, x_dim=35, y_dim=30, n_cities=5, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_05", n_agents=80, x_dim=45, y_dim=35, n_cities=7, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_06", n_agents=80, x_dim=40, y_dim=60, n_cities=9, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_07", n_agents=80, x_dim=60, y_dim=40, n_cities=13, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_08", n_agents=80, x_dim=60, y_dim=60, n_cities=17, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_09", n_agents=100, x_dim=80, y_dim=120, n_cities=21, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_10", n_agents=100, x_dim=100, y_dim=80, n_cities=25, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_11", n_agents=200, x_dim=100, y_dim=100, n_cities=29, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_12", n_agents=200, x_dim=150, y_dim=150, n_cities=33, n_envs_run=n_envs_run)
-    # tot += main("F3:R2:Test_13", n_agents=400, x_dim=150, y_dim=150, n_cities=37, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_14", n_agents=425, x_dim=158, y_dim=158, n_cities=41, n_envs_run=n_envs_run)
-    logger.info("===============================================================")
-    logger.info(tot / (15 * n_envs_run))
+
+@click.command()
+@click.option('--benchmark',
+              type=str,
+              help="Name of the benchmark",
+              required=True
+              )
+@click.option('--n_envs_run',
+              type=int,
+              help="Number of envs",
+              default=1,
+              required=False
+              )
+def benchmark(benchmark: str, n_envs_run: int):
+    logging.basicConfig(level=logging.INFO, format="[%(asctime)s][%(levelname)s][%(process)d][%(filename)s:%(funcName)s:%(lineno)d] %(message)s")
+    main(benchmark, *configs[benchmark], n_envs_run=n_envs_run)
 
     # expectation:
     # https://www.aicrowd.com/challenges/flatland-3/leaderboards?challenge_leaderboard_extra_id=965&challenge_round_id=1083&post_challenge=true: adrian OR aka. deadlockavoidance: 30.134 	0.3620 	OR 	47
+
+
+if __name__ == "__main__":
+    sys.exit(benchmark())
