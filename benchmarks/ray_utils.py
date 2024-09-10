@@ -1,9 +1,9 @@
-from envs.flatten_tree_observation_for_rail_env import FlattenTreeObsForRailEnv
-from envs.line_generators import sparse_line_generator
-from envs.predictions import ShortestPathPredictorForRailEnv
-from envs.rail_env import RailEnv
-from envs.rail_env_wrappers import ray_multi_agent_env_wrapper
-from envs.rail_generators import sparse_rail_generator
+from flatland.envs.flatten_tree_observation_for_rail_env import FlattenTreeObsForRailEnv
+from flatland.envs.line_generators import sparse_line_generator
+from flatland.envs.predictions import ShortestPathPredictorForRailEnv
+from flatland.envs.rail_env import RailEnv
+from flatland.envs.rail_env_wrappers import ray_multi_agent_env_wrapper
+from flatland.envs.rail_generators import sparse_rail_generator
 
 
 def get_env(n_agents=10, x_dim=20, y_dim=30, n_cities=2, seed=None, obs_builder_object=None):
