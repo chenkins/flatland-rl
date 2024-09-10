@@ -5,23 +5,11 @@ import click
 import numpy as np
 from ray.rllib import RolloutWorker
 from ray.rllib.algorithms import AlgorithmConfig
-from sympy.tensor.array.arrayop import Flatten
 
 from benchmarks.ray_utils import get_env
-from envs.flatten_tree_observation_for_rail_env import FlattenTreeObsForRailEnv
-from envs.observations import TreeObsForRailEnv
-from envs.predictions import ShortestPathPredictorForRailEnv
 from flatland.contrib.policies.DeadlockAvoidancePolicy import DeadLockAvoidancePolicy
-from flatland.envs.line_generators import sparse_line_generator
-from flatland.envs.observations import GlobalObsForRailEnv
-from flatland.envs.rail_env import RailEnv
-from flatland.envs.rail_env_wrappers import ray_multi_agent_env_wrapper
-from flatland.envs.rail_generators import sparse_rail_generator
 
 logger = logging.getLogger()
-
-
-
 
 
 # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
