@@ -115,8 +115,6 @@ def test_rail_env_wrappers_training(obs_builder: Callable[[], ObservationBuilder
 # TODO 0.6 bei 1000 Episode
 # TODO whole adrian zoo of contrib.policies run for one training epoch for illustration
 
-# https://www.aicrowd.com/challenges/flatland-3/leaderboards?challenge_leaderboard_extra_id=965&challenge_round_id=1083&post_challenge=true
-# TODO adrian OR = deadlockavoidance: 30.134 	0.3620 	OR 	47
 
 # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
 # https://flatland.aicrowd.com/challenges/flatland3/test-submissions-local.html

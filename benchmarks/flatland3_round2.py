@@ -94,33 +94,32 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10):
         batch = worker.sample()
 
         # get first complete episode
-        # TODO verify either max_episode_steps reached or done
+        # TODO verify either max_episode_steps reached or done (complete
         cumulative_reward = np.sum(batch['main']['rewards'][np.argwhere(batch['main']['eps_id'] == batch['main']['eps_id'][0])])
         logger.info(f"{label} end {i_envs_run + 1}/{n_envs_run}:")
         # https://flatland.aicrowd.com/challenges/flatland3/eval.html
         normalized_reward = (cumulative_reward / (env.wrap._max_episode_steps * env.wrap.get_num_agents())) + 1
         logger.info(normalized_reward)
         total_reward += normalized_reward
-    # assert env.wrap._max_episode_steps >= batch.env_steps()
     return total_reward
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(clientip)-15s %(user)-8s %(message)s')
 
     # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
     tot = 0
     n_envs_run = 10
-    tot += main("F3:R2:Test_00", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_01", n_agents=10, x_dim=30, y_dim=30, n_cities=2, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_02", n_agents=50, x_dim=30, y_dim=30, n_cities=3, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_03", n_agents=50, x_dim=30, y_dim=35, n_cities=3, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_04", n_agents=80, x_dim=35, y_dim=30, n_cities=5, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_05", n_agents=80, x_dim=45, y_dim=35, n_cities=7, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_06", n_agents=80, x_dim=40, y_dim=60, n_cities=9, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_07", n_agents=80, x_dim=60, y_dim=40, n_cities=13, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_08", n_agents=80, x_dim=60, y_dim=60, n_cities=17, n_envs_run=n_envs_run)
-    tot += main("F3:R2:Test_09", n_agents=100, x_dim=80, y_dim=120, n_cities=21, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_00", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_01", n_agents=10, x_dim=30, y_dim=30, n_cities=2, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_02", n_agents=50, x_dim=30, y_dim=30, n_cities=3, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_03", n_agents=50, x_dim=30, y_dim=35, n_cities=3, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_04", n_agents=80, x_dim=35, y_dim=30, n_cities=5, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_05", n_agents=80, x_dim=45, y_dim=35, n_cities=7, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_06", n_agents=80, x_dim=40, y_dim=60, n_cities=9, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_07", n_agents=80, x_dim=60, y_dim=40, n_cities=13, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_08", n_agents=80, x_dim=60, y_dim=60, n_cities=17, n_envs_run=n_envs_run)
+    #tot += main("F3:R2:Test_09", n_agents=100, x_dim=80, y_dim=120, n_cities=21, n_envs_run=n_envs_run)
     tot += main("F3:R2:Test_10", n_agents=100, x_dim=100, y_dim=80, n_cities=25, n_envs_run=n_envs_run)
     tot += main("F3:R2:Test_11", n_agents=200, x_dim=100, y_dim=100, n_cities=29, n_envs_run=n_envs_run)
     tot += main("F3:R2:Test_12", n_agents=200, x_dim=150, y_dim=150, n_cities=33, n_envs_run=n_envs_run)
@@ -128,3 +127,7 @@ if __name__ == '__main__':
     tot += main("F3:R2:Test_14", n_agents=425, x_dim=158, y_dim=158, n_cities=41, n_envs_run=n_envs_run)
     logger.info("===============================================================")
     logger.info(tot / (15 * n_envs_run))
+
+    # expectation:
+    # https://www.aicrowd.com/challenges/flatland-3/leaderboards?challenge_leaderboard_extra_id=965&challenge_round_id=1083&post_challenge=true: adrian OR aka. deadlockavoidance: 30.134 	0.3620 	OR 	47
+
