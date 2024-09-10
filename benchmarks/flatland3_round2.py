@@ -5,7 +5,12 @@ import click
 import numpy as np
 from ray.rllib import RolloutWorker
 from ray.rllib.algorithms import AlgorithmConfig
+from sympy.tensor.array.arrayop import Flatten
 
+from benchmarks.ray_utils import get_env
+from envs.flatten_tree_observation_for_rail_env import FlattenTreeObsForRailEnv
+from envs.observations import TreeObsForRailEnv
+from envs.predictions import ShortestPathPredictorForRailEnv
 from flatland.contrib.policies.DeadlockAvoidancePolicy import DeadLockAvoidancePolicy
 from flatland.envs.line_generators import sparse_line_generator
 from flatland.envs.observations import GlobalObsForRailEnv
@@ -16,54 +21,7 @@ from flatland.envs.rail_generators import sparse_rail_generator
 logger = logging.getLogger()
 
 
-def _get_env(n_agents=10, x_dim=20, y_dim=30, n_cities=2, seed=None):
-    max_rails_between_cities = 2
-    max_rails_in_city = 4
 
-    obs_builder_object = GlobalObsForRailEnv()
-
-    rail_env = RailEnv(
-        width=x_dim,
-        height=y_dim,
-        rail_generator=sparse_rail_generator(
-            max_num_cities=n_cities,
-            seed=seed,
-            grid_mode=True,
-            max_rails_between_cities=max_rails_between_cities,
-            max_rail_pairs_in_city=max_rails_in_city
-        ),
-        line_generator=sparse_line_generator(),
-        number_of_agents=n_agents,
-        obs_builder_object=obs_builder_object
-    )
-    # install agents!
-    rail_env.reset()
-    # https://discuss.ray.io/t/multi-agent-where-does-the-first-structure-comes-from/7010/8
-    # env = ray_multi_agent_env_wrapper(wrap=rail_env, render_mode="rgb_array")
-    env = ray_multi_agent_env_wrapper(wrap=rail_env)
-    return env
-
-
-# class RenderCallback(DefaultCallbacks):
-#     def __init__(self):
-#         super().__init__()
-#         self.env_renderer = None
-#
-#     def on_episode_step(
-#         self,
-#         **kwargs,
-#     ) -> None:
-#         if self.env_renderer is None:
-#             # TODO dirty!
-#             env = kwargs['base_env'].envs[0].wrap
-#             self.env_renderer = RenderTool(env)
-#
-#         self.env_renderer.render_env(
-#             show=True,
-#             frames=False,
-#             show_observations=False,
-#             show_predictions=False
-#         )
 
 
 # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
@@ -72,7 +30,7 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10, s
     total_reward = 0
     for i_envs_run in range(n_envs_run):
         logger.info(f"{label} start {i_envs_run + 1}/{n_envs_run}")
-        env = _get_env(n_agents=n_agents, x_dim=x_dim, y_dim=y_dim, n_cities=n_cities, seed=seed)
+        env = get_env(n_agents=n_agents, x_dim=x_dim, y_dim=y_dim, n_cities=n_cities, seed=seed)
         worker = RolloutWorker(
             env_creator=lambda _: env,
             config=AlgorithmConfig()
@@ -107,6 +65,7 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10, s
 
 
 # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
+# TODO check exact specs: malfunctions etc. seeds? also max_rails_between_cities etc.
 configs = {
     "F3:R2:Test_00": [10, 20, 30, 2],
     "F3:R2:Test_01": [10, 30, 30, 2],
