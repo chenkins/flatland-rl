@@ -105,7 +105,7 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(clientip)-15s %(user)-8s %(message)s')
+    logger.setLevel(logging.INFO)
 
     # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
     tot = 0
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     # tot += main("F3:R2:Test_06", n_agents=80, x_dim=40, y_dim=60, n_cities=9, n_envs_run=n_envs_run)
     # tot += main("F3:R2:Test_07", n_agents=80, x_dim=60, y_dim=40, n_cities=13, n_envs_run=n_envs_run)
     # tot += main("F3:R2:Test_08", n_agents=80, x_dim=60, y_dim=60, n_cities=17, n_envs_run=n_envs_run)
-    #tot += main("F3:R2:Test_09", n_agents=100, x_dim=80, y_dim=120, n_cities=21, n_envs_run=n_envs_run)
+    # tot += main("F3:R2:Test_09", n_agents=100, x_dim=80, y_dim=120, n_cities=21, n_envs_run=n_envs_run)
     # tot += main("F3:R2:Test_10", n_agents=100, x_dim=100, y_dim=80, n_cities=25, n_envs_run=n_envs_run)
     # tot += main("F3:R2:Test_11", n_agents=200, x_dim=100, y_dim=100, n_cities=29, n_envs_run=n_envs_run)
     # tot += main("F3:R2:Test_12", n_agents=200, x_dim=150, y_dim=150, n_cities=33, n_envs_run=n_envs_run)
@@ -130,4 +130,3 @@ if __name__ == '__main__':
 
     # expectation:
     # https://www.aicrowd.com/challenges/flatland-3/leaderboards?challenge_leaderboard_extra_id=965&challenge_round_id=1083&post_challenge=true: adrian OR aka. deadlockavoidance: 30.134 	0.3620 	OR 	47
-
