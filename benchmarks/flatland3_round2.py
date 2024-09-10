@@ -101,7 +101,7 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10, s
         logger.info(f"{label} end {i_envs_run + 1}/{n_envs_run}:")
         # https://flatland.aicrowd.com/challenges/flatland3/eval.html
         normalized_reward = (cumulative_reward / (env.wrap._max_episode_steps * env.wrap.get_num_agents())) + 1
-        logger.info(normalized_reward)
+        logger.info(f"{label}: normalized_reward={normalized_reward}")
         total_reward += normalized_reward
     return total_reward
 
