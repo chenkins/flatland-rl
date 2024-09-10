@@ -16,10 +16,10 @@ from flatland.envs.rail_generators import sparse_rail_generator
 logger = logging.getLogger()
 
 
-def _get_env(n_agents=10, x_dim=20, y_dim=30, n_cities=2):
+def _get_env(n_agents=10, x_dim=20, y_dim=30, n_cities=2, seed=None):
     max_rails_between_cities = 2
     max_rails_in_city = 4
-    seed = 0
+
     obs_builder_object = GlobalObsForRailEnv()
 
     rail_env = RailEnv(
@@ -68,11 +68,11 @@ def _get_env(n_agents=10, x_dim=20, y_dim=30, n_cities=2):
 
 # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html
 
-def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10):
+def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10, seed=None):
     total_reward = 0
     for i_envs_run in range(n_envs_run):
         logger.info(f"{label} start {i_envs_run + 1}/{n_envs_run}")
-        env = _get_env(n_agents=n_agents, x_dim=x_dim, y_dim=y_dim, n_cities=n_cities)
+        env = _get_env(n_agents=n_agents, x_dim=x_dim, y_dim=y_dim, n_cities=n_cities, seed=seed)
         worker = RolloutWorker(
             env_creator=lambda _: env,
             config=AlgorithmConfig()
