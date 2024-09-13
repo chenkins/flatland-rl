@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "flatland-rl"
 description = "Multi Agent Reinforcement Learning on Trains"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 keywords = ["flatland"]
 authors = [{ name = "Flatland Association", email = "contact@flatland-association.org" }]
@@ -14,8 +14,6 @@ classifiers = [
     'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
     'Natural Language :: English',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
 ]
 dependencies = [
@@ -42,7 +40,7 @@ dependencies = [
     "pyarrow >= 6.0.1",
     "pyglet",
     "PyYAML",
-    "ray",
+    "ray==2.30.0",
     "recordtype",
     "redis",
     "scikit-image>=0.21.0",
