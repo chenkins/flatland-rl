@@ -16,9 +16,9 @@ attrs==24.2.0
     # via
     #   jsonschema
     #   referencing
-boto3==1.35.18
+boto3==1.35.19
     # via flatland-rl (pyproject.toml)
-botocore==1.35.18
+botocore==1.35.19
     # via
     #   boto3
     #   s3transfer
@@ -49,7 +49,9 @@ dataclasses==0.6
 decorator==5.1.1
     # via ipython
 dm-tree==0.1.8
-    # via flatland-rl (pyproject.toml)
+    # via
+    #   flatland-rl (pyproject.toml)
+    #   ray
 docker-pycreds==0.4.0
     # via wandb
 exceptiongroup==1.2.2
@@ -66,17 +68,20 @@ frozenlist==1.4.1
     # via
     #   aiosignal
     #   ray
+fsspec==2024.9.0
+    # via ray
 gitdb==4.0.11
     # via gitpython
 gitpython==3.1.43
     # via wandb
 graphviz==0.20.3
     # via flatland-rl (pyproject.toml)
-gymnasium==0.29.1
+gymnasium==0.28.1
     # via
     #   pettingzoo
+    #   ray
     #   supersuit
-idna==3.8
+idna==3.9
     # via requests
 imageio==2.35.1
     # via scikit-image
@@ -95,6 +100,8 @@ ipywidgets==8.1.5
     #   flatland-rl (pyproject.toml)
     #   ipycanvas
     #   ipyevents
+jax-jumpy==1.0.0
+    # via gymnasium
 jedi==0.19.1
     # via ipython
 jmespath==1.0.1
@@ -113,6 +120,8 @@ lazy-loader==0.4
     # via scikit-image
 lxml==5.3.0
     # via svgutils
+lz4==4.3.3
+    # via ray
 markdown-it-py==3.0.0
     # via rich
 matplotlib==3.9.2
@@ -134,13 +143,14 @@ networkx==3.3
     # via
     #   flatland-rl (pyproject.toml)
     #   scikit-image
-numpy==2.1.1
+numpy==1.26.4
     # via
     #   contourpy
     #   flatland-rl (pyproject.toml)
     #   gymnasium
     #   imageio
     #   ipycanvas
+    #   jax-jumpy
     #   matplotlib
     #   msgpack-numpy
     #   pandas
@@ -150,6 +160,7 @@ numpy==2.1.1
     #   scipy
     #   seaborn
     #   supersuit
+    #   tensorboardx
     #   tifffile
     #   tinyscaler
 packaging==24.1
@@ -158,9 +169,11 @@ packaging==24.1
     #   matplotlib
     #   ray
     #   scikit-image
+    #   tensorboardx
 pandas==2.2.2
     # via
     #   flatland-rl (pyproject.toml)
+    #   ray
     #   seaborn
 parso==0.8.4
     # via jedi
@@ -175,13 +188,14 @@ pillow==10.4.0
     #   ipycanvas
     #   matplotlib
     #   scikit-image
-platformdirs==4.3.2
+platformdirs==4.3.3
     # via wandb
 prompt-toolkit==3.0.47
     # via ipython
 protobuf==5.28.1
     # via
     #   ray
+    #   tensorboardx
     #   wandb
 psutil==6.0.0
     # via wandb
@@ -190,7 +204,9 @@ ptyprocess==0.7.0
 pure-eval==0.2.3
     # via stack-data
 pyarrow==17.0.0
-    # via flatland-rl (pyproject.toml)
+    # via
+    #   flatland-rl (pyproject.toml)
+    #   ray
 pyglet==2.0.17
     # via flatland-rl (pyproject.toml)
 pygments==2.18.0
@@ -204,7 +220,7 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   matplotlib
     #   pandas
-python-gitlab==4.10.0
+python-gitlab==4.11.1
     # via crowdai-api
 pytz==2024.2
     # via pandas
@@ -213,8 +229,10 @@ pyyaml==6.0.2
     #   flatland-rl (pyproject.toml)
     #   ray
     #   wandb
-ray==2.30.0
-    # via flatland-rl (pyproject.toml)
+ray[rllib]==2.30.0
+    # via
+    #   flatland-rl (pyproject.toml)
+    #   ray
 recordtype==1.4
     # via flatland-rl (pyproject.toml)
 redis==5.0.8
@@ -235,7 +253,9 @@ requests==2.32.3
 requests-toolbelt==1.0.0
     # via python-gitlab
 rich==13.8.1
-    # via typer
+    # via
+    #   ray
+    #   typer
 rpds-py==0.20.0
     # via
     #   jsonschema
@@ -243,9 +263,13 @@ rpds-py==0.20.0
 s3transfer==0.10.2
     # via boto3
 scikit-image==0.24.0
-    # via flatland-rl (pyproject.toml)
+    # via
+    #   flatland-rl (pyproject.toml)
+    #   ray
 scipy==1.14.1
-    # via scikit-image
+    # via
+    #   ray
+    #   scikit-image
 seaborn==0.13.2
     # via flatland-rl (pyproject.toml)
 sentry-sdk==2.14.0
@@ -268,6 +292,8 @@ supersuit==3.9.3
     # via flatland-rl (pyproject.toml)
 svgutils==0.3.4
     # via flatland-rl (pyproject.toml)
+tensorboardx==2.6.2.2
+    # via ray
 tifffile==2024.8.30
     # via scikit-image
 timeout-decorator==0.5.0
@@ -281,7 +307,9 @@ traitlets==5.14.3
     #   ipywidgets
     #   matplotlib-inline
 typer==0.12.5
-    # via flatland-rl (pyproject.toml)
+    # via
+    #   flatland-rl (pyproject.toml)
+    #   ray
 typing-extensions==4.12.2
     # via
     #   gymnasium
