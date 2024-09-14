@@ -6,33 +6,27 @@
 #
 aiosignal==1.3.1
     # via ray
-appdirs==1.4.4
-    # via wandb
-appnope==0.1.4
-    # via ipython
 asttokens==2.4.1
     # via stack-data
 async-timeout==4.0.3
     # via redis
 attr==0.3.2
     # via flatland-rl (pyproject.toml)
-attrs==23.1.0
+attrs==24.2.0
     # via
     #   jsonschema
     #   referencing
-backcall==0.2.0
-    # via ipython
-boto3==1.28.73
+boto3==1.35.18
     # via flatland-rl (pyproject.toml)
-botocore==1.31.73
+botocore==1.35.18
     # via
     #   boto3
     #   s3transfer
-certifi==2023.7.22
+certifi==2024.8.30
     # via
     #   requests
     #   sentry-sdk
-charset-normalizer==3.3.1
+charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via
@@ -42,9 +36,9 @@ click==8.1.7
     #   wandb
 cloudpickle==3.0.0
     # via gymnasium
-comm==0.1.4
+comm==0.2.2
     # via ipywidgets
-contourpy==1.1.1
+contourpy==1.3.0
     # via matplotlib
 crowdai-api==0.1.22
     # via flatland-rl (pyproject.toml)
@@ -58,43 +52,45 @@ dm-tree==0.1.8
     # via flatland-rl (pyproject.toml)
 docker-pycreds==0.4.0
     # via wandb
-executing==2.0.1
+exceptiongroup==1.2.2
+    # via ipython
+executing==2.1.0
     # via stack-data
 farama-notifications==0.0.4
     # via gymnasium
-filelock==3.13.0
+filelock==3.16.0
     # via ray
-fonttools==4.43.1
+fonttools==4.53.1
     # via matplotlib
-frozenlist==1.4.0
+frozenlist==1.4.1
     # via
     #   aiosignal
     #   ray
 gitdb==4.0.11
     # via gitpython
-gitpython==3.1.40
+gitpython==3.1.43
     # via wandb
-graphviz==0.20.1
+graphviz==0.20.3
     # via flatland-rl (pyproject.toml)
 gymnasium==0.29.1
     # via
     #   pettingzoo
     #   supersuit
-idna==3.4
+idna==3.8
     # via requests
 imageio==2.35.1
     # via scikit-image
 importlib-resources==1.5.0
     # via flatland-rl (pyproject.toml)
-ipycanvas==0.13.1
+ipycanvas==0.13.3
     # via flatland-rl (pyproject.toml)
 ipyevents==2.0.2
     # via flatland-rl (pyproject.toml)
-ipython==8.12.3
+ipython==8.27.0
     # via
     #   flatland-rl (pyproject.toml)
     #   ipywidgets
-ipywidgets==8.1.1
+ipywidgets==8.1.5
     # via
     #   flatland-rl (pyproject.toml)
     #   ipycanvas
@@ -105,40 +101,40 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsonschema==4.19.1
+jsonschema==4.23.0
     # via ray
-jsonschema-specifications==2023.7.1
+jsonschema-specifications==2023.12.1
     # via jsonschema
-jupyterlab-widgets==3.0.9
+jupyterlab-widgets==3.0.13
     # via ipywidgets
-kiwisolver==1.4.5
+kiwisolver==1.4.7
     # via matplotlib
 lazy-loader==0.4
     # via scikit-image
-lxml==4.9.3
+lxml==5.3.0
     # via svgutils
 markdown-it-py==3.0.0
     # via rich
-matplotlib==3.6.3
+matplotlib==3.9.2
     # via
     #   flatland-rl (pyproject.toml)
     #   seaborn
-matplotlib-inline==0.1.6
+matplotlib-inline==0.1.7
     # via ipython
 mdurl==0.1.2
     # via markdown-it-py
-msgpack==1.0.7
+msgpack==1.1.0
     # via
     #   flatland-rl (pyproject.toml)
     #   msgpack-numpy
     #   ray
 msgpack-numpy==0.4.8
     # via flatland-rl (pyproject.toml)
-networkx==3.1
+networkx==3.3
     # via
     #   flatland-rl (pyproject.toml)
     #   scikit-image
-numpy==1.24.4
+numpy==2.1.1
     # via
     #   contourpy
     #   flatland-rl (pyproject.toml)
@@ -150,89 +146,86 @@ numpy==1.24.4
     #   pandas
     #   pettingzoo
     #   pyarrow
-    #   ray
     #   scikit-image
     #   scipy
     #   seaborn
     #   supersuit
     #   tifffile
     #   tinyscaler
-packaging==23.2
+packaging==24.1
     # via
     #   lazy-loader
     #   matplotlib
     #   ray
     #   scikit-image
-pandas==2.0.3
+pandas==2.2.2
     # via
     #   flatland-rl (pyproject.toml)
     #   seaborn
-parso==0.8.3
+parso==0.8.4
     # via jedi
-pathtools==0.1.2
-    # via wandb
-pettingzoo==1.24.1
+pettingzoo==1.24.3
     # via flatland-rl (pyproject.toml)
-pexpect==4.8.0
+pexpect==4.9.0
     # via ipython
-pickleshare==0.7.5
-    # via ipython
-pillow==10.1.0
+pillow==10.4.0
     # via
     #   flatland-rl (pyproject.toml)
     #   imageio
     #   ipycanvas
     #   matplotlib
     #   scikit-image
-prompt-toolkit==3.0.39
+platformdirs==4.3.2
+    # via wandb
+prompt-toolkit==3.0.47
     # via ipython
-protobuf==4.24.4
+protobuf==5.28.1
     # via
     #   ray
     #   wandb
-psutil==5.9.6
+psutil==6.0.0
     # via wandb
 ptyprocess==0.7.0
     # via pexpect
-pure-eval==0.2.2
+pure-eval==0.2.3
     # via stack-data
 pyarrow==17.0.0
     # via flatland-rl (pyproject.toml)
-pyglet==2.0.9
+pyglet==2.0.17
     # via flatland-rl (pyproject.toml)
-pygments==2.16.1
+pygments==2.18.0
     # via
     #   ipython
     #   rich
-pyparsing==3.1.1
+pyparsing==3.1.4
     # via matplotlib
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   botocore
     #   matplotlib
     #   pandas
-python-gitlab==3.15.0
+python-gitlab==4.10.0
     # via crowdai-api
-pytz==2023.3.post1
+pytz==2024.2
     # via pandas
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via
     #   flatland-rl (pyproject.toml)
     #   ray
     #   wandb
-ray==2.7.1
+ray==2.30.0
     # via flatland-rl (pyproject.toml)
 recordtype==1.4
     # via flatland-rl (pyproject.toml)
-redis==5.0.1
+redis==5.0.8
     # via
     #   crowdai-api
     #   flatland-rl (pyproject.toml)
-referencing==0.30.2
+referencing==0.35.1
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.31.0
+requests==2.32.3
     # via
     #   crowdai-api
     #   python-gitlab
@@ -241,21 +234,21 @@ requests==2.31.0
     #   wandb
 requests-toolbelt==1.0.0
     # via python-gitlab
-rich==13.8.0
+rich==13.8.1
     # via typer
-rpds-py==0.10.6
+rpds-py==0.20.0
     # via
     #   jsonschema
     #   referencing
-s3transfer==0.7.0
+s3transfer==0.10.2
     # via boto3
 scikit-image==0.24.0
     # via flatland-rl (pyproject.toml)
 scipy==1.14.1
     # via scikit-image
-seaborn==0.13.0
+seaborn==0.13.2
     # via flatland-rl (pyproject.toml)
-sentry-sdk==1.32.0
+sentry-sdk==2.14.0
     # via wandb
 setproctitle==1.3.3
     # via wandb
@@ -271,7 +264,7 @@ smmap==5.0.1
     # via gitdb
 stack-data==0.6.3
     # via ipython
-supersuit==3.9.0
+supersuit==3.9.3
     # via flatland-rl (pyproject.toml)
 svgutils==0.3.4
     # via flatland-rl (pyproject.toml)
@@ -279,9 +272,9 @@ tifffile==2024.8.30
     # via scikit-image
 timeout-decorator==0.5.0
     # via flatland-rl (pyproject.toml)
-tinyscaler==1.2.7
+tinyscaler==1.2.8
     # via supersuit
-traitlets==5.12.0
+traitlets==5.14.3
     # via
     #   comm
     #   ipython
@@ -289,22 +282,23 @@ traitlets==5.12.0
     #   matplotlib-inline
 typer==0.12.5
     # via flatland-rl (pyproject.toml)
-typing-extensions==4.8.0
+typing-extensions==4.12.2
     # via
     #   gymnasium
+    #   ipython
     #   typer
-tzdata==2023.3
+tzdata==2024.1
     # via pandas
-urllib3==1.26.18
+urllib3==2.2.3
     # via
     #   botocore
     #   requests
     #   sentry-sdk
-wandb==0.15.12
+wandb==0.18.0
     # via flatland-rl (pyproject.toml)
-wcwidth==0.2.8
+wcwidth==0.2.13
     # via prompt-toolkit
-widgetsnbextension==4.0.9
+widgetsnbextension==4.0.13
     # via ipywidgets
 
 # The following packages are considered to be unsafe in a requirements file:
