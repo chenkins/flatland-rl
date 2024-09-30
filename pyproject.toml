@@ -21,6 +21,8 @@ dependencies = [
     "boto3",
     "click",
     "crowdai_api",
+    # pin cryptography because of https://stackoverflow.com/questions/73830524/attributeerror-module-lib-has-no-attribute-x509-v-flag-cb-issuer-check
+    "cryptography==36.0.2",
     "dataclasses",
     "dm_tree",
     "graphviz",
