@@ -1,46 +1,37 @@
-import os
-import math
+from functools import partial
+from typing import Union
+
+import gymnasium as gym
+import matplotlib.pyplot as plt
 import numpy as np
-import gym
-from gym.utils import seeding
+import pandas as pd
+import seaborn as sns
+from PIL import Image
+from gymnasium.spaces import Box
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector
-from pettingzoo.utils import wrappers
-from gym.utils import EzPickle
-from pettingzoo.utils.conversions import to_parallel_wrapper
-from flatland.envs.rail_env import RailEnv
-from mava.wrappers.flatland import infer_observation_space, normalize_observation
-from functools import partial
+from pettingzoo.utils.conversions import aec_to_parallel_wrapper, parallel_wrapper_fn
+
+from envs.flatten_tree_observation_for_rail_env import normalize_observation
 from flatland.envs.observations import GlobalObsForRailEnv, TreeObsForRailEnv
+from flatland.envs.rail_env import RailEnv
 
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pandas as pd
-from PIL import Image
-
-"""Adapted from 
+"""Adapted from
 - https://github.com/PettingZoo-Team/PettingZoo/blob/HEAD/pettingzoo/butterfly/pistonball/pistonball.py
 - https://github.com/instadeepai/Mava/blob/HEAD/mava/wrappers/flatland.py
 """
 
-def parallel_wrapper_fn(env_fn):
-    def par_fn(**kwargs):
-        env = env_fn(**kwargs)
-        env = custom_parallel_wrapper(env)
-        return env
-    return par_fn
 
 def env(**kwargs):
     env = raw_env(**kwargs)
-    # env = wrappers.AssertOutOfBoundsWrapper(env)
-    # env = wrappers.OrderEnforcingWrapper(env)
     return env
 
 
 parallel_env = parallel_wrapper_fn(env)
 
-class custom_parallel_wrapper(to_parallel_wrapper):
-    
+
+class custom_parallel_wrapper(aec_to_parallel_wrapper):
+
     def step(self, actions):
         rewards = {a: 0 for a in self.aec_env.agents}
         dones = {}
@@ -55,7 +46,7 @@ class custom_parallel_wrapper(to_parallel_wrapper):
                 print(self.aec_env.dones.values())
                 raise e
             obs, rew, done, info = self.aec_env.last()
-            self.aec_env.step(actions.get(agent,0))
+            self.aec_env.step(actions.get(agent, 0))
             for agent in self.aec_env.agents:
                 rewards[agent] += self.aec_env.rewards[agent]
 
@@ -65,13 +56,14 @@ class custom_parallel_wrapper(to_parallel_wrapper):
         observations = {agent: self.aec_env.observe(agent) for agent in self.aec_env.agents}
         return observations, rewards, dones, infos
 
+
 class raw_env(AECEnv, gym.Env):
-
     metadata = {'render.modes': ['human', "rgb_array"], 'name': "flatland_pettingzoo",
-            'video.frames_per_second': 10,
-            'semantics.autoreset': False }
+                'video.frames_per_second': 10,
+                'is_parallelizable': True,
+                'semantics.autoreset': False}
 
-    def __init__(self, environment = False, preprocessor = False, agent_info = False, *args, **kwargs):
+    def __init__(self, environment=False, preprocessor=False, agent_info=False, *args, **kwargs):
         # EzPickle.__init__(self, *args, **kwargs)
         self._environment = environment
 
@@ -86,7 +78,7 @@ class raw_env(AECEnv, gym.Env):
 
         self.action_spaces = {
             agent: gym.spaces.Discrete(self.num_actions) for agent in self.possible_agents
-        }              
+        }
 
         self.seed()
         # preprocessor must be for observation builders other than global obs
@@ -101,13 +93,12 @@ class raw_env(AECEnv, gym.Env):
         # to define the observation space. All agents are identical and would
         # have the same observation space.
         # Infer observation space based on returned observation
-        obs, _ = self._environment.reset(regenerate_rail = False, regenerate_schedule = False)
+        obs, _ = self._environment.reset(regenerate_rail=False, regenerate_schedule=False)
         obs = self.preprocessor(obs)
         self.observation_spaces = {
             i: infer_observation_space(ob) for i, ob in obs.items()
         }
 
-    
     @property
     def environment(self) -> RailEnv:
         """Returns the wrapped environment."""
@@ -117,19 +108,19 @@ class raw_env(AECEnv, gym.Env):
     def dones(self):
         dones = self._environment.dones
         # remove_all = dones.pop("__all__", None)
-        return {get_agent_keys(key): value for key, value in dones.items()}    
-    
-    @property
-    def obs_builder(self):    
-        return self._environment.obs_builder    
+        return {get_agent_keys(key): value for key, value in dones.items()}
 
     @property
-    def width(self):    
-        return self._environment.width  
+    def obs_builder(self):
+        return self._environment.obs_builder
 
     @property
-    def height(self):    
-        return self._environment.height  
+    def width(self):
+        return self._environment.width
+
+    @property
+    def height(self):
+        return self._environment.height
 
     @property
     def agents_data(self):
@@ -144,7 +135,7 @@ class raw_env(AECEnv, gym.Env):
     # def __getattr__(self, name):
     #     """Expose any other attributes of the underlying environment."""
     #     return getattr(self._environment, name)
-   
+
     @property
     def agents(self):
         return self._agents
@@ -155,10 +146,10 @@ class raw_env(AECEnv, gym.Env):
 
     def env_done(self):
         return self._environment.dones["__all__"] or not self.agents
-    
-    def observe(self,agent):
+
+    def observe(self, agent):
         return self.obs.get(agent)
-    
+
     def last(self, observe=True):
         '''
         returns observation, reward, done, info   for the current agent (specified by self.agent_selection)
@@ -166,7 +157,7 @@ class raw_env(AECEnv, gym.Env):
         agent = self.agent_selection
         observation = self.observe(agent) if observe else None
         return observation, self.rewards.get(agent), self.dones.get(agent), self.infos.get(agent)
-    
+
     def seed(self, seed: int = None) -> None:
         self._environment._seed(seed)
 
@@ -183,7 +174,7 @@ class raw_env(AECEnv, gym.Env):
         # pass
         for agent in self.rewards:
             self.rewards[agent] = 0
-    
+
     def reset(self, *args, **kwargs):
         self._reset_next_step = False
         self._agents = self.possible_agents[:]
@@ -193,7 +184,7 @@ class raw_env(AECEnv, gym.Env):
         self.agent_selection = self._agent_selector.next()
         self.rewards = dict(zip(self.agents, [0 for _ in self.agents]))
         self._cumulative_rewards = dict(zip(self.agents, [0 for _ in self.agents]))
-        self.action_dict = {get_agent_handle(i):0 for i in self.possible_agents}
+        self.action_dict = {get_agent_handle(i): 0 for i in self.possible_agents}
 
         return observations
 
@@ -203,7 +194,7 @@ class raw_env(AECEnv, gym.Env):
             self._agents = []
             self._reset_next_step = True
             return self.last()
-        
+
         agent = self.agent_selection
         self.action_dict[get_agent_handle(agent)] = action
 
@@ -232,19 +223,18 @@ class raw_env(AECEnv, gym.Env):
             self.rewards = {get_agent_keys(key): value for key, value in rewards.items()}
             if observations:
                 observations = self._collate_obs_and_info(observations, infos)
-    
+
         else:
             self._clear_rewards()
-        
+
         # self._cumulative_rewards[agent] = 0
         self._accumulate_rewards()
 
         obs, cumulative_reward, done, info = self.last()
-        
+
         self.agent_selection = self._agent_selector.next()
 
         return obs, cumulative_reward, done, info
-
 
     # collate agent info and observation into a tuple, making the agents obervation to
     # be a tuple of the observation from the env and the agent info
@@ -263,7 +253,7 @@ class raw_env(AECEnv, gym.Env):
 
         self.infos = infos
         self.obs = observations
-        return observations   
+        return observations
 
     def set_probs(self, probs):
         self.probs = probs
@@ -279,8 +269,8 @@ class raw_env(AECEnv, gym.Env):
                 self.image_shape = env_rgb_array.shape
             if not hasattr(self, "probs "):
                 self.probs = [[0., 0., 0., 0.]]
-            fig, ax = plt.subplots(figsize=(self.image_shape[1]/100, self.image_shape[0]/100),
-                                constrained_layout=True, dpi=100)
+            fig, ax = plt.subplots(figsize=(self.image_shape[1] / 100, self.image_shape[0] / 100),
+                                   constrained_layout=True, dpi=100)
             df = pd.DataFrame(np.array(self.probs).T)
             sns.barplot(x=df.index, y=0, data=df, ax=ax)
             ax.set(xlabel='actions', ylabel='probs')
@@ -314,7 +304,7 @@ class raw_env(AECEnv, gym.Env):
             assert _preprocessor is not None
         else:
             def _preprocessor(x):
-                    return x
+                return x
 
         def returned_preprocessor(obs):
             temp_obs = {}
@@ -324,14 +314,40 @@ class raw_env(AECEnv, gym.Env):
 
         return returned_preprocessor
 
-# Utility functions   
+
+# Utility functions
 def convert_np_type(dtype, value):
-    return np.dtype(dtype).type(value) 
+    return np.dtype(dtype).type(value)
+
 
 def get_agent_handle(id):
     """Obtain an agents handle given its id"""
     return int(id)
 
+
 def get_agent_keys(id):
     """Obtain an agents handle given its id"""
     return str(id)
+
+
+def infer_observation_space(
+    obs: Union[tuple, np.ndarray, dict]
+) -> Union[Box, tuple, dict]:
+    """Infer a gym Observation space from a sample observation from flatland"""
+    if isinstance(obs, np.ndarray):
+        return Box(
+            -np.inf,
+            np.inf,
+            shape=obs.shape,
+            dtype=obs.dtype,
+        )
+    elif isinstance(obs, tuple):
+        return tuple(infer_observation_space(o) for o in obs)
+    elif isinstance(obs, dict):
+        return {key: infer_observation_space(value) for key, value in obs.items()}
+    else:
+        raise ValueError(
+            f"Unexpected observation type: {type(obs)}. "
+            f"Observation should be of either of this types "
+            f"(np.ndarray, tuple, or dict)"
+        )
