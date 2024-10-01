@@ -22,7 +22,9 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10, s
         worker = RolloutWorker(
             env_creator=lambda _: env,
             config=AlgorithmConfig()
-            .experimental(_disable_preprocessor_api=True, _disable_execution_plan_api=True)
+            # .experimental(
+            #     _disable_preprocessor_api=True, _disable_execution_plan_api=True
+            # )
             .multi_agent(
                 policies={
                     f"main": (DeadLockAvoidancePolicy, env.observation_space[aid], env.action_space[aid], {})
