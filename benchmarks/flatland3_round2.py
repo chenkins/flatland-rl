@@ -6,7 +6,7 @@ import numpy as np
 from ray.rllib import RolloutWorker
 from ray.rllib.algorithms import AlgorithmConfig
 
-from benchmarks.ray_utils import get_env
+from benchmarks.ray_utils import ray_env_creator
 from flatland.contrib.policies.DeadlockAvoidancePolicy import DeadLockAvoidancePolicy
 
 logger = logging.getLogger()
@@ -18,7 +18,7 @@ def main(label="", n_agents=10, x_dim=20, y_dim=30, n_cities=2, n_envs_run=10, s
     total_reward = 0
     for i_envs_run in range(n_envs_run):
         logger.info(f"{label} start {i_envs_run + 1}/{n_envs_run}")
-        env = get_env(n_agents=n_agents, x_dim=x_dim, y_dim=y_dim, n_cities=n_cities, seed=seed)
+        env = ray_env_creator(n_agents=n_agents, x_dim=x_dim, y_dim=y_dim, n_cities=n_cities, seed=seed)
         worker = RolloutWorker(
             env_creator=lambda _: env,
             config=AlgorithmConfig()

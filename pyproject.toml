@@ -43,7 +43,7 @@ dependencies = [
     "pyarrow >= 6.0.1",
     "pyglet",
     "PyYAML",
-    "ray[rllib]==2.30.0",
+    "ray[rllib]==2.36.0",
     "recordtype",
     "redis",
     "scikit-image>=0.21.0",

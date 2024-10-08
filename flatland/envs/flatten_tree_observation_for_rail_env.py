@@ -143,7 +143,8 @@ class FlattenTreeObsForRailEnv(TreeObsForRailEnv):
 
     def get_many(self, handles: Optional[List[int]] = None):
         obs = super(FlattenTreeObsForRailEnv, self).get_many(handles)
-        return np.stack([normalize_observation(obs[i], tree_depth=self.max_depth, observation_radius=self.observation_radius) for i in range(len(handles))])
+        obs = {i: normalize_observation(obs[i], tree_depth=self.max_depth, observation_radius=self.observation_radius) for i in range(len(handles))}
+        return obs
 
     def get_observation_space(self, handle: int = 0):
         # max_depth=1 -> 55, max_depth=2 -> 231, max_depth=3 -> 935, ...
