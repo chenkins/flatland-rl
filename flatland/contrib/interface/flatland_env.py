@@ -12,7 +12,7 @@ from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector
 from pettingzoo.utils.conversions import aec_to_parallel_wrapper, parallel_wrapper_fn
 
-from envs.flatten_tree_observation_for_rail_env import normalize_observation
+from flatland.envs.flatten_tree_observation_for_rail_env import normalize_observation
 from flatland.envs.observations import GlobalObsForRailEnv, TreeObsForRailEnv
 from flatland.envs.rail_env import RailEnv
 
