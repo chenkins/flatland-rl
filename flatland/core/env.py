@@ -3,6 +3,8 @@ The env module defines the base Environment class.
 The base Environment class is adapted from rllib.env.MultiAgentEnv
 (https://github.com/ray-project/ray).
 """
+import abc
+from typing import List
 
 
 class Environment:
@@ -43,10 +45,11 @@ class Environment:
 
     """
 
+    @abc.abstractmethod
     def __init__(self):
-        self.action_space = ()
         pass
 
+    @abc.abstractmethod
     def reset(self):
         """
         Resets the env and returns observations from agents in the environment.
@@ -58,6 +61,7 @@ class Environment:
         """
         raise NotImplementedError()
 
+    @abc.abstractmethod
     def step(self, action_dict):
         """
         Environment step.
@@ -85,7 +89,8 @@ class Environment:
         """
         raise NotImplementedError()
 
-    def get_agent_handles(self):
+    @abc.abstractmethod
+    def get_agent_handles(self) -> List[int]:
         """
         Returns a list of agents' handles to be used as keys in the step()
         function.

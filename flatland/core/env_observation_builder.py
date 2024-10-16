@@ -10,6 +10,7 @@ multi-agent environments.
 """
 from typing import Optional, List
 
+import gymnasium as gym
 import numpy as np
 
 from flatland.core.env import Environment
@@ -21,8 +22,15 @@ class ObservationBuilder:
     """
 
     def __init__(self):
-        self.env = None
+        self.env: Environment = None
 
+    def get_observation_space(self, handle: int = 0) -> gym.Space:
+        """
+        Takes in agent and returns the observation space for that agent.
+        """
+        raise NotImplementedError()
+
+    # TODO bad code smell
     def set_env(self, env: Environment):
         self.env: Environment = env
 
@@ -91,8 +99,8 @@ class DummyObservationBuilder(ObservationBuilder):
     def reset(self):
         pass
 
-    def get_many(self, handles: Optional[List[int]] = None) -> bool:
-        return True
-
     def get(self, handle: int = 0) -> bool:
         return True
+
+    def get_observation_space(self, handle: int = 0):
+        return gym.spaces.Discrete(2)

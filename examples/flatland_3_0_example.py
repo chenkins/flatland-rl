@@ -57,8 +57,7 @@ def create_env():
                                             min_duration=3,  # Minimal duration of malfunction
                                             max_duration=20  # Max duration of malfunction
                                             )
-    # Custom observation builder
-    TreeObservation = TreeObsForRailEnv(max_depth=2, predictor=ShortestPathPredictorForRailEnv())
+
     nAgents = 3
     n_cities = 2
     max_rails_between_cities = 2
@@ -76,6 +75,7 @@ def create_env():
         ),
         line_generator=sparse_line_generator(),
         number_of_agents=nAgents,
+        # Custom observation builder
         obs_builder_object=TreeObsForRailEnv(max_depth=3, predictor=ShortestPathPredictorForRailEnv())
     )
     return env

@@ -4,6 +4,7 @@ import sys
 import time
 from typing import List
 
+import gymnasium as gym
 import numpy as np
 
 from flatland.core.env_observation_builder import ObservationBuilder
@@ -13,11 +14,13 @@ from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import sparse_rail_generator
 from flatland.utils.misc import str2bool
 from flatland.utils.rendertools import RenderTool
+from flatland.utils.decorators import candidate_for_deletion
 
 random.seed(100)
 np.random.seed(100)
 
 
+@candidate_for_deletion
 class SingleAgentNavigationObs(ObservationBuilder):
     """
     We build a representation vector with 3 binary components, indicating which of the 3 available directions
@@ -62,7 +65,11 @@ class SingleAgentNavigationObs(ObservationBuilder):
 
         return observation
 
+    def get_observation_space(self, handle: int = 0):
+        return gym.spaces.Box(low=-np.inf, high=np.inf, shape=(3,))
 
+
+@candidate_for_deletion
 def create_env():
     nAgents = 1
     n_cities = 2
@@ -86,6 +93,7 @@ def create_env():
     return env
 
 
+@candidate_for_deletion
 def custom_observation_example_02_SingleAgentNavigationObs(sleep_for_animation, do_rendering):
     env = create_env()
     obs, info = env.reset()
@@ -110,6 +118,7 @@ def custom_observation_example_02_SingleAgentNavigationObs(sleep_for_animation, 
         env_renderer.close_window()
 
 
+@candidate_for_deletion
 def main(args):
     try:
         opts, args = getopt.getopt(args, "", ["sleep-for-animation=", "do_rendering=", ""])
