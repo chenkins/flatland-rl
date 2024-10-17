@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sys
+from typing import Optional
 
 import click
 import pandas as pd
@@ -37,12 +38,9 @@ class LightEvaluationService(DefaultCallbacks, FlatlandRemoteEvaluationService):
         base_env: BaseEnv,
         **kwargs,
     ):
-        print(f"on_episode_step {self.current_test, self.current_level, self.current_step} [{self.first_episode_done}]")
         # get action from ray rollout
         _raw_rail_env: RailEnv = base_env._unwrapped_env.wrap
         action = _raw_rail_env.list_actions[-1]  # record_steps=True
-
-        print(_raw_rail_env.agents)
 
         # TODO how to run only one episode with ray?
         if not self.first_episode_done:
@@ -50,27 +48,43 @@ class LightEvaluationService(DefaultCallbacks, FlatlandRemoteEvaluationService):
                 "action": action,
                 "inference_time": 0
             }})
-            assert len(_raw_rail_env.agents) == len(self.env.agents)
-
-            # TODO ray does an additional reset without seed.... Grr!
-            for a, b in zip(_raw_rail_env.agents, self.env.agents):
-                assert a.handle == b.handle, (a, b)
-                assert a.initial_position == b.initial_position, (a, b)
-                assert a.initial_direction == b.initial_direction, (a, b)
-                assert a.target == b.target, (a, b)
-                assert a.earliest_departure == b.earliest_departure, (a, b)
-                assert a.latest_arrival == b.latest_arrival, (a, b)
-                assert a.latest_arrival == b.latest_arrival, (a, b)
-                assert a.direction == b.direction, (a, b)
-                assert a.position == b.position, (a, b)
-                assert a.state == b.state, (a, b)
+            check_rail_env_agents_equal(_raw_rail_env, self.env)
 
             if self.env.dones['__all__']:
                 print(f"--> done {self.current_test, self.current_level, self.current_step}")
                 self.first_episode_done = True
 
+    def on_episode_start(
+        self,
+        *,
+        base_env: Optional[BaseEnv] = None,
+        **kwargs,
+    ) -> None:
+        _raw_rail_env: RailEnv = base_env._unwrapped_env.wrap
+        # ray does reset without seed, see ray.rllib.env.multi_agent_env._MultiAgentEnvState.poll()
+        _raw_rail_env.reset(
+            regenerate_rail=True,
+            regenerate_schedule=True,
+            random_seed=RANDOM_SEED
+        )
+
     def send_response(self, _command_response, command, suppress_logs=False):
         pass
+
+
+def check_rail_env_agents_equal(env, _raw_rail_env):
+    assert len(_raw_rail_env.agents) == len(env.agents)
+    for a, b in zip(_raw_rail_env.agents, env.agents):
+        assert a.handle == b.handle, (a, b)
+        assert a.initial_position == b.initial_position, (a, b)
+        assert a.initial_direction == b.initial_direction, (a, b)
+        assert a.target == b.target, (a, b)
+        assert a.earliest_departure == b.earliest_departure, (a, b)
+        assert a.latest_arrival == b.latest_arrival, (a, b)
+        assert a.latest_arrival == b.latest_arrival, (a, b)
+        assert a.direction == b.direction, (a, b)
+        assert a.position == b.position, (a, b)
+        assert a.state == b.state, (a, b)
 
 
 # https://flatland.aicrowd.com/challenges/flatland3/envconfig.html: n_agents, x_dim, y_dim, n_cities
@@ -174,33 +188,22 @@ def benchmark(tests, gen_pkl: bool, results_path):
             evaluator.simulation_env_file_paths[-1]
         )
 
+        # raw env for ray
         raw_env, _ = RailEnvPersister.load_new(test_env_file_path)
         _ = raw_env.reset(
             regenerate_rail=True,
             regenerate_schedule=True,
             random_seed=RANDOM_SEED
         )
-
-        assert len(raw_env.agents) == len(evaluator.env.agents)
-
-        # TODO remove?
-        for a, b in zip(raw_env.agents, evaluator.env.agents):
-            assert a.handle == b.handle, (a, b)
-            assert a.initial_position == b.initial_position, (a, b)
-            assert a.initial_direction == b.initial_direction, (a, b)
-            assert a.target == b.target, (a, b)
-            assert a.earliest_departure == b.earliest_departure, (a, b)
-            assert a.latest_arrival == b.latest_arrival, (a, b)
-            assert a.latest_arrival == b.latest_arrival, (a, b)
-            assert a.direction == b.direction, (a, b)
-            assert a.position == b.position, (a, b)
-            assert a.state == b.state, (a, b)
-
-        assert evaluator.get_env_test_and_level(test_env_file_path) == (evaluator.current_test, evaluator.current_level)
-
         env = ray_multi_agent_env_wrapper(wrap=raw_env)
 
+        # sanity checks
+        assert evaluator.get_env_test_and_level(test_env_file_path) == (evaluator.current_test, evaluator.current_level)
+        check_rail_env_agents_equal(raw_env, evaluator.env)
+
         # TODO old api stack
+        # https://docs.ray.io/en/latest/rllib/rllib-new-api-stack.html Who should use the new API stack?
+        #    Eventually, all users of RLlib should switch over to running experiments and developing their custom classes against the new API stack.
         worker = RolloutWorker(
             env_creator=lambda _: env,
             config=AlgorithmConfig()
@@ -216,7 +219,6 @@ def benchmark(tests, gen_pkl: bool, results_path):
             # TODO deprecated api
             .rollouts(num_envs_per_worker=1, batch_mode='complete_episodes')
             .callbacks(
-                # TODO inject dir
                 lambda: evaluator
             )
         )
@@ -228,7 +230,6 @@ def benchmark(tests, gen_pkl: bool, results_path):
 
         if evaluator.evaluation_done:
             break
-        return
 
     results = evaluator.handle_env_submit({"payload": {}})
     if results_output_path_json:
