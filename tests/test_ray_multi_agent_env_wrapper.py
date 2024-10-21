@@ -7,7 +7,7 @@ from ray.rllib.utils.test_utils import add_rllib_example_script_args
 
 from benchmarks.ray_training import train
 from benchmarks.ray_utils import ray_env_creator
-from core.env_observation_builder import ObservationBuilder
+from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.contrib.policies.DeadlockAvoidancePolicy import DeadLockAvoidancePolicy
 from flatland.core.env_observation_builder import DummyObservationBuilder
 from flatland.envs.flatten_tree_observation_for_rail_env import FlattenTreeObsForRailEnv
