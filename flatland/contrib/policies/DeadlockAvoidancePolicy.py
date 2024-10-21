@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from ray.rllib import Policy, SampleBatch
 from ray.rllib.utils.typing import TensorStructType, TensorType, AlgorithmConfigDict
 
-from envs.rail_env import RailEnv
+from flatland.envs.rail_env import RailEnv
 from flatland.contrib.policies.utils.deadlock_avoidance_policy import DeadlockAvoidanceShortestDistanceWalker
 from flatland.envs.rail_env_action import RailEnvActions
 from flatland.envs.step_utils.states import TrainState
