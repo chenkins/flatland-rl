@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 from ray.rllib import Policy, SampleBatch
 from ray.rllib.utils.typing import TensorStructType, TensorType, AlgorithmConfigDict
 
+from envs.rail_env import RailEnv
 from flatland.contrib.policies.utils.deadlock_avoidance_policy import DeadlockAvoidanceShortestDistanceWalker
 from flatland.envs.rail_env_action import RailEnvActions
 from flatland.envs.step_utils.states import TrainState
@@ -26,7 +27,7 @@ class DeadLockAvoidancePolicy(Policy):
             action_space=action_space,
             config=config
         )
-        # self.env: RailEnv = env
+        self.env: RailEnv = config['env']
 
         self.loss = 0
         # self.action_size = action_size

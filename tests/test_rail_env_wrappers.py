@@ -39,17 +39,13 @@ def test_rail_env_wrappers_random_rollout(obs_builder_object: ObservationBuilder
         env_creator=lambda _: env,
         config=AlgorithmConfig().experimental(_disable_preprocessor_api=True).multi_agent(
             policies={
-                f"main": (DeadLockAvoidancePolicy, env.observation_space["0"], env.action_space["0"], {})
+                f"main": (DeadLockAvoidancePolicy, env.observation_space["0"], env.action_space["0"], {'env': env})
             },
             policy_mapping_fn=(
                 lambda aid, episode, **kwargs: f"main"
             )
         )
     )
-    # TODO very dirty.... deadlockavoidancepolicy specific
-    for p in worker.policy_map.values():
-        p.env = worker.env
-        p.action_size = 5
     worker.sample()
 
 

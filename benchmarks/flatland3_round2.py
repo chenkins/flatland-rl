@@ -209,7 +209,7 @@ def benchmark(tests, gen_pkl: bool, results_path):
             config=AlgorithmConfig()
             .multi_agent(
                 policies={
-                    f"main": (DeadLockAvoidancePolicy, env.observation_space[aid], env.action_space[aid], {})
+                    f"main": (DeadLockAvoidancePolicy, env.observation_space[aid], env.action_space[aid], {'env': env})
                     for aid in env.get_agent_ids()
                 },
                 policy_mapping_fn=(
@@ -222,10 +222,6 @@ def benchmark(tests, gen_pkl: bool, results_path):
                 lambda: evaluator
             )
         )
-        # TODO very dirty....
-        for p in worker.policy_map.values():
-            p.env = worker.env
-            p.action_size = 5
         worker.sample()
 
         if evaluator.evaluation_done:
