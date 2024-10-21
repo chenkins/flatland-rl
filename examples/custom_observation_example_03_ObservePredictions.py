@@ -4,6 +4,7 @@ import sys
 import time
 from typing import Optional, List, Dict
 
+import gymnasium as gym
 import numpy as np
 
 from flatland.core.env import Environment
@@ -16,11 +17,13 @@ from flatland.envs.rail_generators import sparse_rail_generator
 from flatland.utils.misc import str2bool
 from flatland.utils.ordered_set import OrderedSet
 from flatland.utils.rendertools import RenderTool
+from flatland.utils.decorators import candidate_for_deletion
 
 random.seed(100)
 np.random.seed(100)
 
 
+@candidate_for_deletion
 class ObservePredictions(ObservationBuilder):
     """
     We use the provided ShortestPathPredictor to illustrate the usage of predictors in your custom observation.
@@ -101,7 +104,11 @@ class ObservePredictions(ObservationBuilder):
         if self.predictor:
             self.predictor.set_env(self.env)
 
+    def get_observation_space(self, handle: int = 0):
+        return gym.spaces.Box(low=-np.inf, high=np.inf, shape=(10,))
 
+
+@candidate_for_deletion
 def create_env(custom_obs_builder):
     nAgents = 3
     n_cities = 2
@@ -162,6 +169,7 @@ def custom_observation_example_03_ObservePredictions(sleep_for_animation, do_ren
         env_renderer.close_window()
 
 
+@candidate_for_deletion
 def main(args):
     try:
         opts, args = getopt.getopt(args, "", ["sleep-for-animation=", "do_rendering=", ""])

@@ -2,9 +2,11 @@
 Collection of environment-specific ObservationBuilder.
 """
 import collections
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Any, Sequence
 
+import gymnasium as gym
 import numpy as np
+import numpy.typing as npt
 
 from flatland.core.env import Environment
 from flatland.core.env_observation_builder import ObservationBuilder
@@ -15,6 +17,7 @@ from flatland.envs.agent_utils import EnvAgent
 from flatland.envs.fast_methods import fast_argmax, fast_count_nonzero, fast_position_equal, fast_delete, fast_where
 from flatland.envs.step_utils.states import TrainState
 from flatland.utils.ordered_set import OrderedSet
+from flatland.utils.decorators import candidate_for_deletion
 
 Node = collections.namedtuple('Node', 'dist_own_target_encountered '
                                       'dist_other_target_encountered '
@@ -211,7 +214,6 @@ class TreeObsForRailEnv(ObservationBuilder):
         # Here information about the agent itself is stored
         distance_map = self.env.distance_map.get()
 
-        # was referring to TreeObsForRailEnv.Node
         root_node_observation = Node(dist_own_target_encountered=0, dist_other_target_encountered=0,
                                      dist_other_agent_encountered=0, dist_potential_conflict=0,
                                      dist_unusable_switch=0, dist_to_next_branch=0,
@@ -440,7 +442,6 @@ class TreeObsForRailEnv(ObservationBuilder):
             dist_to_next_branch = tot_dist
             dist_min_to_target = distance_map_handle[position[0], position[1], direction]
 
-        # TreeObsForRailEnv.Node
         node = Node(dist_own_target_encountered=own_target_encountered,
                     dist_other_target_encountered=other_target_encountered,
                     dist_other_agent_encountered=other_agent_encountered,
@@ -532,6 +533,27 @@ class TreeObsForRailEnv(ObservationBuilder):
         return int((direction + 2) % 4)
 
 
+class RailEnvSpace(gym.spaces.Space):
+    def __init__(
+        self,
+        obs_builder: ObservationBuilder,
+        shape: Sequence[int] | None = None,
+        dtype: npt.DTypeLike | None = None,
+        seed: int | np.random.Generator | None = None,
+
+    ):
+        super().__init__(shape, dtype, seed)
+        self.obs_builder = obs_builder
+
+    def sample(self, mask: Any | None = None):
+        # get = self.obs_builder.get()
+        get = self.obs_builder.get_many(self.obs_builder.env.get_agent_handles())
+        return get
+
+    def contains(self, x: Any) -> bool:
+        return True
+
+
 class GlobalObsForRailEnv(ObservationBuilder):
     """
     Gives a global observation of the entire rail environment.
@@ -554,8 +576,20 @@ class GlobalObsForRailEnv(ObservationBuilder):
     def __init__(self):
         super(GlobalObsForRailEnv, self).__init__()
 
+    def get_observation_space(self, handle: int = 0):
+        return self.observation_space
+
     def set_env(self, env: Environment):
         super().set_env(env)
+        # N.B.
+        self.observation_space = gym.spaces.Tuple(spaces=[
+            # transition map
+            RailEnvSpace(self, shape=(self.env.height, self.env.width, 16), dtype=np.float64),
+            # obs_agents_state
+            RailEnvSpace(self, shape=(self.env.height, self.env.width, 5), dtype=np.float64),
+            # obs_targets
+            RailEnvSpace(self, shape=(self.env.height, self.env.width, 2), dtype=np.float64)
+        ])
 
     def reset(self):
         self.rail_obs = np.zeros((self.env.height, self.env.width, 16))
@@ -580,10 +614,6 @@ class GlobalObsForRailEnv(ObservationBuilder):
         obs_targets = np.zeros((self.env.height, self.env.width, 2))
         obs_agents_state = np.zeros((self.env.height, self.env.width, 5)) - 1
 
-        # TODO can we do this more elegantly?
-        # for r in range(self.env.height):
-        #     for c in range(self.env.width):
-        #         obs_agents_state[(r, c)][4] = 0
         obs_agents_state[:, :, 4] = 0
 
         obs_agents_state[agent_virtual_position][0] = agent.direction
@@ -610,7 +640,7 @@ class GlobalObsForRailEnv(ObservationBuilder):
                 obs_agents_state[other_agent.initial_position][4] += 1
         return self.rail_obs, obs_agents_state, obs_targets
 
-
+@candidate_for_deletion
 class LocalObsForRailEnv(ObservationBuilder):
     """
     !!!!!!WARNING!!! THIS IS DEPRACTED AND NOT UPDATED TO FLATLAND 2.0!!!!!
@@ -695,15 +725,6 @@ class LocalObsForRailEnv(ObservationBuilder):
 
         direction = np.identity(4)[agent.direction]
         return local_rail_obs, obs_map_state, obs_other_agents_state, direction
-
-    def get_many(self, handles: Optional[List[int]] = None) -> Dict[
-        int, Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]:
-        """
-        Called whenever an observation has to be computed for the `env` environment, for each agent with handle
-        in the `handles` list.
-        """
-
-        return super().get_many(handles)
 
     def field_of_view(self, position, direction, state=None):
         # Compute the local field of view for an agent in the environment

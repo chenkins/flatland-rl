@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "flatland-rl"
 description = "Multi Agent Reinforcement Learning on Trains"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 keywords = ["flatland"]
 authors = [{ name = "Flatland Association", email = "contact@flatland-association.org" }]
@@ -14,8 +14,6 @@ classifiers = [
     'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
     'Natural Language :: English',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
 ]
 dependencies = [
@@ -23,7 +21,10 @@ dependencies = [
     "boto3",
     "click",
     "crowdai_api",
+    # pin cryptography because of https://stackoverflow.com/questions/73830524/attributeerror-module-lib-has-no-attribute-x509-v-flag-cb-issuer-check
+    "cryptography==36.0.2",
     "dataclasses",
+    "dm_tree",
     "graphviz",
     "importlib_resources<2.0.0",
     "ipycanvas",
@@ -34,19 +35,24 @@ dependencies = [
     "msgpack_numpy",
     "msgpack",
     "networkx",
-    "numpy",
+    # pin numpy to < 2 because of https://github.com/pytorch/pytorch/issues/135013
+    "numpy<2",
     "pandas",
     "pettingzoo",
     "Pillow",
+    "pyarrow >= 6.0.1",
     "pyglet",
     "PyYAML",
-    "ray",
+    "ray[rllib]==2.36.0",
     "recordtype",
     "redis",
+    "scikit-image>=0.21.0",
     "seaborn",
     "supersuit",
     "svgutils",
+    "tblib",
     "timeout_decorator",
+    "typer",
     "wandb",
 ]
 dynamic = ["version"]
