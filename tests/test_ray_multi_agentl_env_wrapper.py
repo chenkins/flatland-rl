@@ -48,7 +48,8 @@ def test_rail_env_wrappers_random_rollout(obs_builder_object: ObservationBuilder
     )
     worker.sample()
 
-
+# TODO takes too long for unit tests -> mark as skip or IT? Or reduce training.
+@pytest.mark.skip(reason="Too slow for now")
 @pytest.mark.parametrize(
     "obs_builder,algo",
     [

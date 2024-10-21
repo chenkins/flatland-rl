@@ -5,7 +5,7 @@ from flatland.envs.line_generators import sparse_line_generator
 from flatland.envs.malfunction_generators import ParamMalfunctionGen, MalfunctionParameters
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 from flatland.envs.rail_env import RailEnv
-from flatland.envs.rail_env_wrappers import ray_multi_agent_env_wrapper
+from flatland.envs.rail_env_wrappers import ray_multi_agent_env_wrapper, RayMultiAgentWrapper
 from flatland.envs.rail_generators import sparse_rail_generator
 
 
@@ -25,7 +25,7 @@ def ray_env_creator(n_agents=7,
                     speed_ratios={1.0: 0.25, 0.5: 0.25, 0.33: 0.25, 0.25: 0.25},
                     seed=42,
                     obs_builder_object=None,
-                    render_mode: Optional[str] = None):
+                    render_mode: Optional[str] = None) -> RayMultiAgentWrapper:
     if obs_builder_object is None:
         obs_builder_object = FlattenTreeObsForRailEnv(max_depth=3, predictor=ShortestPathPredictorForRailEnv(max_depth=50))
 
